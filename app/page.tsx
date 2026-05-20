@@ -1,224 +1,434 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
-import { 
-  PhoneCall, 
-  MessageSquare, 
-  CalendarCheck, 
-  TrendingUp, 
-  Settings, 
+import React, { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import {
+  PhoneCall,
+  MessageSquare,
+  CalendarCheck,
+  TrendingUp,
+  Settings,
   ShieldCheck,
-  ChevronRight,
   Stethoscope,
-  Bot
+  CheckCircle2,
+  Lock,
+  Menu,
+  X,
+  ChevronDown,
+  Clock,
+  Smartphone,
+  Bot,
+  Instagram,
+  Twitter,
+  Facebook,
+  Linkedin
 } from "lucide-react";
 
 // --- ANIMATION VARIANTS ---
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+const getFadeUpVariants = (prefersReducedMotion: boolean | null) => {
+  if (prefersReducedMotion) {
+    return {
+      hidden: { opacity: 0 },
+      visible: { opacity: 1, transition: { duration: 0.3 } }
+    };
+  }
+  return {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  };
 };
 
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
+const getStaggerContainer = (prefersReducedMotion: boolean | null) => {
+  if (prefersReducedMotion) {
+    return {
+      hidden: { opacity: 0 },
+      visible: { opacity: 1 }
+    };
+  }
+  return {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
+  };
 };
+
+const CAL_LINK = "https://cal.com/clifford-bulya/15min";
 
 // --- COMPONENTS ---
 
-const Navbar = () => (
-  <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">
-    <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-      <div className="flex items-center space-x-2">
-        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-          <Bot className="text-white w-5 h-5" />
+const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <nav className="fixed top-0 w-full bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg z-50 border-b border-gray-100/60 dark:border-gray-800/60 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <Link href="/" className="flex items-center space-x-2 relative z-50 group" aria-label="PyrexxAI Home">
+          <div className="relative w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform">
+            <Image 
+              src="/logo.png" 
+              alt="PyrexxAI Logo" 
+              fill 
+              sizes="32px"
+              className="object-cover z-10" 
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }} 
+            />
+            <Bot className="text-white w-5 h-5 absolute z-0" />
+          </div>
+          <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">PyrexxAI</span>
+        </Link>
+        
+        <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600 dark:text-gray-300">
+          <a href="#solutions" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded px-2 py-1">Solutions</a>
+          <a href="#how-it-works" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded px-2 py-1">How it Works</a>
+          <a href="#results" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded px-2 py-1">Results</a>
+          <a href="#faq" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded px-2 py-1">FAQ</a>
         </div>
-        <span className="text-xl font-bold tracking-tight text-gray-900">Pyrexx AI</span>
+        
+        <div className="hidden md:block">
+          <a
+            href={CAL_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-full text-sm font-medium transition-all shadow-cta hover:shadow-cta-hover hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950"
+          >
+            Book a Free Demo &rarr;
+          </a>
+        </div>
+
+        {/* Mobile Toggle */}
+        <button 
+          className="md:hidden p-2 text-gray-600 dark:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-md relative z-50"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label={isOpen ? "Close menu" : "Open menu"}
+        >
+          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
       </div>
-      <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600">
-        <a href="#offerings" className="hover:text-blue-600 transition-colors">Solutions</a>
-        <a href="#how-it-works" className="hover:text-blue-600 transition-colors">How it Works</a>
-        <a href="#custom" className="hover:text-blue-600 transition-colors">Custom Build</a>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="absolute top-20 left-0 w-full bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 shadow-xl py-4 px-6 flex flex-col space-y-4 md:hidden z-40"
+          >
+            <a href="#solutions" onClick={() => setIsOpen(false)} className="text-gray-900 dark:text-white font-medium py-2">Solutions</a>
+            <a href="#how-it-works" onClick={() => setIsOpen(false)} className="text-gray-900 dark:text-white font-medium py-2">How it Works</a>
+            <a href="#results" onClick={() => setIsOpen(false)} className="text-gray-900 dark:text-white font-medium py-2">Results</a>
+            <a href="#faq" onClick={() => setIsOpen(false)} className="text-gray-900 dark:text-white font-medium py-2">FAQ</a>
+            <a
+              href={CAL_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setIsOpen(false)}
+              className="bg-brand-600 text-white px-5 py-3 rounded-xl text-center font-medium shadow-cta"
+            >
+              Book a Free Demo &rarr;
+            </a>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
+  );
+};
+
+const Hero = () => {
+  const prefersReducedMotion = useReducedMotion();
+  const fadeUp = getFadeUpVariants(prefersReducedMotion);
+  const stagger = getStaggerContainer(prefersReducedMotion);
+
+  return (
+    <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-24 overflow-hidden dark:bg-gray-950 transition-colors duration-300">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl -z-10 pointer-events-none">
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-100/40 dark:bg-brand-900/20 blur-[100px] rounded-full" />
+        <div className="absolute top-40 left-1/4 w-[600px] h-[300px] bg-accent-50/40 dark:bg-accent-900/20 blur-[100px] rounded-full" />
       </div>
-				<a 
-					href="https://cal.com/clifford-bulya/15min"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-				<button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full text-sm font-medium transition-all shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.23)] hover:-translate-y-0.5">
-					Book a Demo
-				</button>
-			</a>
-    </div>
-  </nav>
-);
 
-const Hero = () => (
-  <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-    {/* Abstract Background Gradients */}
-    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl -z-10 pointer-events-none">
-      <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-400/20 blur-[120px] rounded-full mix-blend-multiply" />
-      <div className="absolute top-40 left-1/4 w-[600px] h-[300px] bg-purple-400/20 blur-[120px] rounded-full mix-blend-multiply" />
-    </div>
+      <div className="max-w-7xl mx-auto px-6 text-center">
+        <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-4xl mx-auto space-y-8">
+          <motion.div variants={fadeUp} className="inline-flex items-center space-x-2 bg-brand-50 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800/50 px-4 py-2 rounded-full text-brand-700 dark:text-brand-300 text-sm font-medium">
+            <span className="text-brand-600 dark:text-brand-400">✦</span>
+            <span>Purpose-built for MedSpas, Dental & Therapy Clinics</span>
+          </motion.div>
+          
+          <motion.h1 variants={fadeUp} className="text-[clamp(2.5rem,6vw,4.5rem)] font-extrabold tracking-tight text-gray-900 dark:text-white leading-[1.1]">
+            Your Clinic's Front Desk.<br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-accent-600 dark:from-brand-400 dark:to-accent-400">
+              Reimagined with AI.
+            </span>
+          </motion.h1>
+          
+          <motion.p variants={fadeUp} className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            38% of patient calls go unanswered. PyrexxAI deploys custom voice AI that answers every call 24/7, books directly into your schedule, and qualifies every lead — HIPAA-compliant and live in 14 days.
+          </motion.p>
+          
+          <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 pt-4">
+            <a 
+              href={CAL_LINK} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 rounded-full text-base font-semibold transition-all shadow-cta hover:shadow-cta-hover hover:-translate-y-0.5 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950"
+            >
+              Book a Free Demo &rarr;
+            </a>
+            <a 
+              href="#how-it-works" 
+              className="w-full sm:w-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-200 px-8 py-4 rounded-full text-base font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950"
+            >
+              See How It Works
+            </a>
+          </motion.div>
 
-    <div className="max-w-7xl mx-auto px-6 text-center">
-      <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-4xl mx-auto space-y-8">
-        <motion.div variants={fadeUp} className="inline-flex items-center space-x-2 bg-blue-50 border border-blue-100 px-4 py-2 rounded-full text-blue-600 text-sm font-medium">
-          <Stethoscope className="w-4 h-4" />
-          <span>Purpose-built for Medspas & Dental Clinics</span>
+          <motion.div variants={fadeUp} className="flex flex-wrap justify-center gap-4 sm:gap-8 pt-6 text-sm font-medium text-gray-500 dark:text-gray-400">
+            <span className="flex items-center"><CheckCircle2 className="w-4 h-4 text-emerald-500 mr-1.5" /> HIPAA Compliant</span>
+            <span className="flex items-center"><CheckCircle2 className="w-4 h-4 text-emerald-500 mr-1.5" /> Live in 14 Days</span>
+            <span className="flex items-center"><CheckCircle2 className="w-4 h-4 text-emerald-500 mr-1.5" /> 24/7 Coverage</span>
+          </motion.div>
         </motion.div>
-        
-        <motion.h1 variants={fadeUp} className="text-5xl lg:text-7xl font-extrabold tracking-tight text-gray-900 leading-[1.1]">
-          Never Miss Another <br/>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-            Patient Call.
-          </span>
-        </motion.h1>
-        
-        <motion.p variants={fadeUp} className="text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-          Deploy premium AI receptionists and lead intake specialists that work 24/7. Automate your clinic's growth, capture every lead, and deliver a flawless patient experience.
-        </motion.p>
-        
-        <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 pt-4">
-          <button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full text-base font-semibold transition-all shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.23)] hover:-translate-y-0.5 flex items-center justify-center">
-            Book a Demo <ChevronRight className="ml-2 w-5 h-5" />
-          </button>
-          <button className="w-full sm:w-auto bg-white border border-gray-200 hover:border-gray-300 text-gray-700 px-8 py-4 rounded-full text-base font-semibold transition-all">
-            Calculate ROI
-          </button>
-        </motion.div>
-      </motion.div>
 
-      {/* UI Mockup Presentation */}
-      <motion.div 
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6, duration: 0.8 }}
-        className="mt-20 relative max-w-5xl mx-auto"
-      >
-        <div className="rounded-2xl border border-gray-200/60 bg-white/50 backdrop-blur-xl shadow-2xl p-2 sm:p-4">
-          <div className="rounded-xl overflow-hidden border border-gray-100 bg-gray-50 aspect-video flex items-center justify-center relative">
-            {/* Mockup Content placeholder */}
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100" />
-            <div className="relative z-10 flex flex-col items-center space-y-4 opacity-50">
-              <Bot className="w-16 h-16 text-blue-600" />
-              <p className="font-medium text-gray-500">Interactive AI Dashboard Visualization</p>
+        {/* UI Mockup Presentation */}
+        <motion.div 
+          initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+          className="mt-16 lg:mt-24 relative max-w-4xl mx-auto"
+        >
+          <div className="rounded-3xl border border-gray-200/50 dark:border-gray-800/50 bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl shadow-[0_25px_60px_rgba(37,99,235,0.08)] p-6 sm:p-10 relative overflow-hidden">
+            <div className="max-w-md mx-auto text-left relative z-10 space-y-6">
+              
+              {/* Active Call Simulation */}
+              <div className="flex items-center space-x-4 bg-white/90 dark:bg-gray-800/90 rounded-2xl p-4 shadow-sm border border-brand-100 dark:border-brand-900/50">
+                <div className="w-12 h-12 bg-brand-600 rounded-full flex items-center justify-center shrink-0">
+                  <PhoneCall className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-semibold text-brand-600 dark:text-brand-400 uppercase tracking-wider mb-1">Inbound Call Active</p>
+                  <div className="flex items-end space-x-1 h-6 text-brand-600 dark:text-brand-400">
+                    <span className="wave-bar"></span>
+                    <span className="wave-bar"></span>
+                    <span className="wave-bar"></span>
+                    <span className="wave-bar"></span>
+                    <span className="wave-bar"></span>
+                    <span className="wave-bar"></span>
+                    <span className="wave-bar"></span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400 tabular-nums">00:23</span>
+                </div>
+              </div>
+
+              {/* Booking Confirmation Simulation */}
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card dark:shadow-none border border-gray-100 dark:border-gray-700 p-5 relative">
+                <div className="absolute -top-3 -right-3 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold px-3 py-1 rounded-full flex items-center shadow-sm">
+                  <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> AI Booked
+                </div>
+                <div className="flex items-start space-x-4">
+                  <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center shrink-0 mt-1">
+                    <CalendarCheck className="text-emerald-600 dark:text-emerald-400 w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 dark:text-white mb-1">Appointment Confirmed</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Emily R. — Botox Consultation</p>
+                    <div className="inline-flex items-center bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-300 text-sm font-medium px-3 py-1 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <Clock className="w-4 h-4 mr-1.5 text-gray-400 dark:text-gray-500" /> Tomorrow, 2:30 PM
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+const StatsBar = () => (
+  <section className="py-12 border-y border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950 transition-colors duration-300">
+    <div className="max-w-7xl mx-auto px-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-transparent md:divide-gray-100 dark:md:divide-gray-800">
+        <div className="text-center md:text-left px-4">
+          <div className="text-4xl font-bold text-brand-600 dark:text-brand-400 stat-number mb-2">38%</div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">of clinic calls go unanswered</p>
         </div>
-      </motion.div>
+        <div className="text-center md:text-left px-4">
+          <div className="text-4xl font-bold text-brand-600 dark:text-brand-400 stat-number mb-2">$67K+</div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">lost annually per practice</p>
+        </div>
+        <div className="text-center md:text-left px-4">
+          <div className="text-4xl font-bold text-brand-600 dark:text-brand-400 stat-number mb-2">14 Days</div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">from kickoff to live AI agent</p>
+        </div>
+        <div className="text-center md:text-left px-4">
+          <div className="text-4xl font-bold text-brand-600 dark:text-brand-400 stat-number mb-2">24/7</div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">coverage with zero overtime</p>
+        </div>
+      </div>
     </div>
   </section>
 );
 
 const SocialProof = () => (
-  <section className="py-10 border-y border-gray-100 bg-gray-50/50">
+  <section className="py-16 bg-gray-50/50 dark:bg-gray-900/50 transition-colors duration-300">
     <div className="max-w-7xl mx-auto px-6">
-      <p className="text-center text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">
-        Trusted by 100+ high-growth aesthetic & dental practices
+      <p className="text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-8">
+        Trusted by growth-focused clinics across the US
       </p>
-      <div className="flex flex-wrap justify-center gap-12 opacity-50 grayscale">
-        {/* Replace with actual client logos */}
-        {['Aesthetics Co.', 'Elite Dental', 'Luxe Medspa', 'Therapy Partners', 'Smile Clinic'].map((logo, i) => (
-          <div key={i} className="text-xl font-bold text-gray-800 flex items-center space-x-2">
-            <div className="w-6 h-6 rounded bg-gray-300" />
-            <span>{logo}</span>
+      <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 dark:opacity-40 grayscale">
+        {['Luxe Aesthetics', 'Smile Dental Studio', 'Renew Therapy Center', 'Elite MedSpa', 'Vitality Clinic'].map((logo, i) => (
+          <div key={i} className="text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200 flex items-center space-x-2">
+            <div className="w-6 h-6 rounded bg-gray-300 dark:bg-gray-600 flex-shrink-0" />
+            <span className="whitespace-nowrap">{logo}</span>
           </div>
         ))}
       </div>
+      <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-8">
+        * Client names shown for illustrative purposes. Real case studies shared on discovery call.
+      </p>
     </div>
   </section>
 );
 
-const Offerings = () => (
-  <section id="offerings" className="py-24 bg-white">
-    <div className="max-w-7xl mx-auto px-6">
-      <div className="text-center mb-16">
-        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">The Complete AI Front Desk</h2>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          We deploy intelligent agents that handle your highest friction tasks, allowing your staff to focus on the patients in front of them.
-        </p>
-      </div>
+const Offerings = () => {
+  const prefersReducedMotion = useReducedMotion();
+  const fadeUp = getFadeUpVariants(prefersReducedMotion);
 
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* AI Receptionist Card */}
-        <motion.div 
-          whileInView="visible" initial="hidden" viewport={{ once: true }} variants={fadeUp}
-          className="group relative p-8 rounded-3xl border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-        >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -z-10 group-hover:bg-blue-100 transition-colors" />
-          <div className="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center mb-6 text-blue-600">
-            <PhoneCall className="w-7 h-7" />
-          </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-3">AI Receptionist</h3>
-          <p className="text-gray-600 mb-6 line-clamp-3">
-            A lifelike voice AI that answers every call, 24/7. It books appointments directly into your EMR, answers FAQs, and recovers missed calls instantly.
+  return (
+    <section id="solutions" className="py-24 bg-white dark:bg-gray-950 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">The Complete AI Front Desk</h2>
+          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            We deploy intelligent agents that handle your highest friction tasks, allowing your staff to focus entirely on the patients in front of them.
           </p>
-          <ul className="space-y-3 mb-8">
-            {['24/7 Inbound Call Handling', 'Direct EMR/EHR Integration', 'Missed Call Text-Back'].map((feature, i) => (
-              <li key={i} className="flex items-center text-gray-700 font-medium">
-                <ShieldCheck className="w-5 h-5 text-blue-500 mr-3 flex-shrink-0" /> {feature}
-              </li>
-            ))}
-          </ul>
-        </motion.div>
+        </div>
 
-        {/* AI Lead Intake Card */}
-        <motion.div 
-          whileInView="visible" initial="hidden" viewport={{ once: true }} variants={fadeUp}
-          className="group relative p-8 rounded-3xl border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-        >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-50 rounded-full blur-3xl -z-10 group-hover:bg-purple-100 transition-colors" />
-          <div className="w-14 h-14 rounded-2xl bg-purple-100 flex items-center justify-center mb-6 text-purple-600">
-            <MessageSquare className="w-7 h-7" />
-          </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-3">AI Lead Intake Specialist</h3>
-          <p className="text-gray-600 mb-6">
-            Instantly responds to website inquiries, SMS, and DMs. Qualifies leads, answers pricing questions, and funnels high-intent prospects to booking.
-          </p>
-          <ul className="space-y-3 mb-8">
-            {['Under 60-Second Response Time', 'Multi-channel (SMS, Web, Social)', 'Smart Lead Qualification'].map((feature, i) => (
-              <li key={i} className="flex items-center text-gray-700 font-medium">
-                <ShieldCheck className="w-5 h-5 text-purple-500 mr-3 flex-shrink-0" /> {feature}
-              </li>
-            ))}
-          </ul>
-        </motion.div>
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Card 1 */}
+          <motion.div 
+            whileInView="visible" initial="hidden" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}
+            className="group relative p-8 lg:p-10 rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm hover:shadow-card-hover dark:hover:shadow-none transition-all duration-300 overflow-hidden flex flex-col"
+          >
+            <div className="absolute top-0 right-0 w-80 h-80 bg-brand-50 dark:bg-brand-900/10 rounded-full blur-3xl -z-10 transition-colors" />
+            
+            <div className="mb-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 w-fit">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-900/40 flex items-center justify-center text-brand-600 dark:text-brand-400">
+                  <PhoneCall className="w-5 h-5" />
+                </div>
+                <div className="flex items-end space-x-1 h-5 text-brand-600 dark:text-brand-400">
+                  <span className="wave-bar h-2"></span>
+                  <span className="wave-bar h-4"></span>
+                  <span className="wave-bar h-5"></span>
+                  <span className="wave-bar h-3"></span>
+                </div>
+                <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Voice Agent</span>
+              </div>
+            </div>
+
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">AI Receptionist</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-8 flex-grow">
+              A lifelike voice AI that answers every call, 24/7. It books appointments directly into your EMR, answers FAQs, and recovers missed calls instantly.
+            </p>
+            
+            <ul className="space-y-4 mb-8">
+              {['24/7 Inbound Call Handling', 'Direct EMR/EHR Booking Integration', 'Missed-Call Text-Back in 60s', 'Custom Voice & Personality Training'].map((feature, i) => (
+                <li key={i} className="flex items-start text-gray-700 dark:text-gray-300 font-medium">
+                  <CheckCircle2 className="w-5 h-5 text-brand-500 dark:text-brand-400 mr-3 mt-0.5 flex-shrink-0" /> {feature}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-auto pt-6 border-t border-gray-100 dark:border-gray-800">
+              <p className="text-sm font-semibold text-brand-700 dark:text-brand-400">
+                <TrendingUp className="w-4 h-4 inline mr-1" /> Average practice captures 38% more bookings in month 1.
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Card 2 */}
+          <motion.div 
+            whileInView="visible" initial="hidden" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}
+            className="group relative p-8 lg:p-10 rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm hover:shadow-card-hover dark:hover:shadow-none transition-all duration-300 overflow-hidden flex flex-col"
+          >
+            <div className="absolute top-0 right-0 w-80 h-80 bg-accent-50 dark:bg-accent-900/10 rounded-full blur-3xl -z-10 transition-colors" />
+            
+            <div className="mb-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 w-fit">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center text-accent-600 dark:text-accent-400">
+                  <MessageSquare className="w-5 h-5" />
+                </div>
+                <div className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-xs px-3 py-1.5 rounded-r-xl rounded-bl-xl shadow-sm">
+                  What's the price for Botox?
+                </div>
+              </div>
+            </div>
+
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">AI Lead Intake Specialist</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-8 flex-grow">
+              Instantly responds to website inquiries, SMS, and DMs. Qualifies leads, answers pricing questions, and funnels high-intent prospects to booking.
+            </p>
+            
+            <ul className="space-y-4 mb-8">
+              {['Sub-60s Response on Web & SMS', 'Smart Lead Qualification & Scoring', 'Auto-Routing to Booking', 'Conversion-Optimized Scripts'].map((feature, i) => (
+                <li key={i} className="flex items-start text-gray-700 dark:text-gray-300 font-medium">
+                  <CheckCircle2 className="w-5 h-5 text-accent-500 dark:text-accent-400 mr-3 mt-0.5 flex-shrink-0" /> {feature}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-auto pt-6 border-t border-gray-100 dark:border-gray-800">
+              <p className="text-sm font-semibold text-accent-700 dark:text-accent-400">
+                <Smartphone className="w-4 h-4 inline mr-1" /> 64% of leads call the next clinic if you don't respond. We fix that.
+              </p>
+            </div>
+          </motion.div>
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const HowItWorks = () => {
+  const prefersReducedMotion = useReducedMotion();
+  const fadeUp = getFadeUpVariants(prefersReducedMotion);
+
   const steps =[
-    { num: "01", title: "Connect", desc: "We integrate securely with your existing EMR, phone systems, and CRM." },
-    { num: "02", title: "Train", desc: "We train the AI on your clinic's specific FAQs, pricing, and tone of voice." },
-    { num: "03", title: "Deploy", desc: "Your AI agents go live, running in the background flawlessly." },
-    { num: "04", title: "Scale", desc: "Watch your booking volume rise while staffing costs decrease." }
+    { num: "01", title: "Audit", desc: "We map your current phone, booking, and lead workflows to identify every revenue leak." },
+    { num: "02", title: "Train", desc: "We build and train your AI agent on your clinic's exact services, pricing, FAQs, and brand voice." },
+    { num: "03", title: "Integrate", desc: "We connect your AI agent securely to your phone system and EMR — zero disruption." },
+    { num: "04", title: "Optimize", desc: "Your agent goes live. We monitor calls, analyze performance, and retrain weekly." }
   ];
 
   return (
-    <section id="how-it-works" className="py-24 bg-gray-50 border-y border-gray-100">
+    <section id="how-it-works" className="py-24 bg-gray-50 dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800 overflow-hidden transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Effortless Implementation</h2>
-          <p className="text-lg text-gray-600">From kickoff to live in under 14 days.</p>
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">Effortless Implementation</h2>
+          <p className="text-lg text-gray-600 dark:text-gray-400">From kickoff to live AI receptionist in under 14 days.</p>
         </div>
         
-        <div className="grid md:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-4 gap-8 relative">
+          <div className="hidden md:block absolute top-8 left-[10%] right-[10%] h-[2px] bg-gray-200 dark:bg-gray-800 -z-10" />
+          
           {steps.map((step, i) => (
             <motion.div 
               key={i}
-              whileInView="visible" initial="hidden" viewport={{ once: true }} variants={fadeUp}
-              className="relative"
+              whileInView="visible" initial="hidden" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}
+              className="relative bg-white dark:bg-gray-950 md:bg-transparent md:dark:bg-transparent p-6 md:p-0 rounded-2xl md:rounded-none shadow-sm dark:shadow-none md:shadow-none border dark:border-gray-800 md:border-none border-gray-100"
             >
-              <div className="text-5xl font-extrabold text-gray-200 mb-4">{step.num}</div>
-              <h4 className="text-xl font-bold text-gray-900 mb-2">{step.title}</h4>
-              <p className="text-gray-600">{step.desc}</p>
-              {i !== steps.length - 1 && (
-                <div className="hidden md:block absolute top-6 left-24 w-full h-[2px] bg-gradient-to-r from-gray-200 to-transparent" />
-              )}
+              <div className="w-16 h-16 bg-white dark:bg-gray-800 border-2 border-brand-100 dark:border-brand-900/50 rounded-2xl flex items-center justify-center text-2xl font-bold text-brand-600 dark:text-brand-400 mb-6 shadow-sm mx-auto md:mx-0 transition-colors">
+                {step.num}
+              </div>
+              <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-3 text-center md:text-left">{step.title}</h4>
+              <p className="text-gray-600 dark:text-gray-400 text-center md:text-left leading-relaxed">{step.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -227,103 +437,432 @@ const HowItWorks = () => {
   );
 };
 
-const Benefits = () => (
-  <section className="py-24 bg-white">
+const ROICalculator = () => {
+  const [calls, setCalls] = useState(200);
+  const [missedRate, setMissedRate] = useState(35);
+  const [ltv, setLtv] = useState(3000);
+  
+  const missedCalls = Math.round(calls * (missedRate / 100));
+  const monthlyRisk = missedCalls * ltv;
+  const annualRisk = monthlyRisk * 12;
+
+  const formatCurrency = (val: number) => 
+    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
+
+  return (
+    <section id="roi" className="py-24 bg-white dark:bg-gray-950 transition-colors duration-300">
+      <div className="max-w-5xl mx-auto px-6">
+        <div className="bg-gradient-to-br from-brand-50 to-brand-100/50 dark:from-gray-900 dark:to-gray-800/50 rounded-3xl p-8 lg:p-12 border border-brand-100 dark:border-gray-700 shadow-sm">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl lg:text-4xl font-bold text-brand-900 dark:text-white mb-4 tracking-tight">Calculate Your Lost Revenue</h2>
+            <p className="text-lg text-brand-700/80 dark:text-gray-400">See how much revenue is walking out the door due to missed calls.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Sliders */}
+            <div className="space-y-8">
+              <div>
+                <div className="flex justify-between mb-2">
+                  <label className="font-semibold text-brand-900 dark:text-gray-200">Monthly Inbound Calls</label>
+                  <span className="font-bold text-brand-700 dark:text-brand-400 stat-number">{calls}</span>
+                </div>
+                <input 
+                  type="range" min="50" max="2000" step="10" value={calls} onChange={(e) => setCalls(Number(e.target.value))}
+                  className="w-full h-2 bg-white dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brand-600"
+                  aria-label="Monthly inbound calls slider"
+                />
+              </div>
+              <div>
+                <div className="flex justify-between mb-2">
+                  <label className="font-semibold text-brand-900 dark:text-gray-200">Missed Call Rate (%)</label>
+                  <span className="font-bold text-brand-700 dark:text-brand-400 stat-number">{missedRate}%</span>
+                </div>
+                <input 
+                  type="range" min="10" max="70" step="1" value={missedRate} onChange={(e) => setMissedRate(Number(e.target.value))}
+                  className="w-full h-2 bg-white dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brand-600"
+                  aria-label="Missed call rate slider"
+                />
+              </div>
+              <div>
+                <div className="flex justify-between mb-2">
+                  <label className="font-semibold text-brand-900 dark:text-gray-200">Avg. Patient Lifetime Value</label>
+                  <span className="font-bold text-brand-700 dark:text-brand-400 stat-number">${ltv}</span>
+                </div>
+                <input 
+                  type="range" min="500" max="15000" step="100" value={ltv} onChange={(e) => setLtv(Number(e.target.value))}
+                  className="w-full h-2 bg-white dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brand-600"
+                  aria-label="Patient lifetime value slider"
+                />
+              </div>
+            </div>
+
+            {/* Output */}
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-card dark:shadow-none border border-gray-100 dark:border-gray-700 flex flex-col justify-center transition-colors">
+              <div className="space-y-6">
+                <div className="border-b border-gray-100 dark:border-gray-800 pb-4">
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Missed Opportunities</p>
+                  <p className="text-3xl font-bold text-gray-900 dark:text-white stat-number">{missedCalls} <span className="text-lg text-gray-500 dark:text-gray-500 font-normal">calls/mo</span></p>
+                </div>
+                <div className="border-b border-gray-100 dark:border-gray-800 pb-4">
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Monthly Revenue at Risk</p>
+                  <p className="text-3xl font-bold text-amber-600 dark:text-amber-500 stat-number">{formatCurrency(monthlyRisk)}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Annual Revenue at Risk</p>
+                  <p className="text-4xl font-extrabold text-red-600 dark:text-red-500 stat-number">{formatCurrency(annualRisk)}</p>
+                </div>
+              </div>
+              <a 
+                href={CAL_LINK} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="mt-8 w-full bg-brand-600 hover:bg-brand-700 text-white px-6 py-4 rounded-xl text-center font-bold transition-all shadow-cta hover:shadow-cta-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              >
+                Recover This Revenue &rarr;
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const Results = () => (
+  <section id="results" className="py-24 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 transition-colors duration-300">
     <div className="max-w-7xl mx-auto px-6">
       <div className="text-center mb-16">
-        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Transform Your Bottom Line</h2>
+        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">Transform Your Bottom Line</h2>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 bg-blue-50 rounded-3xl p-8 border border-blue-100 flex flex-col justify-center">
-          <TrendingUp className="w-10 h-10 text-blue-600 mb-4" />
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">+30% More Booked Appointments</h3>
-          <p className="text-gray-600">By capturing after-hours calls and instantly responding to web leads, our clinics see a dramatic increase in actual scheduled consultations.</p>
+        {/* Large Card 1 */}
+        <div className="md:col-span-2 bg-white dark:bg-gray-950 rounded-3xl p-8 lg:p-10 border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col justify-center overflow-hidden relative transition-colors">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-brand-50 dark:bg-brand-900/10 rounded-full blur-3xl -z-10" />
+          <TrendingUp className="w-10 h-10 text-brand-600 dark:text-brand-400 mb-6" />
+          <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">40% Fewer No-Shows</h3>
+          <p className="text-lg text-gray-600 dark:text-gray-400">Automated appointment reminders and instant rebooking for cancellations keep your schedule full and eliminate dead time.</p>
         </div>
-        <div className="bg-gray-50 rounded-3xl p-8 border border-gray-100 flex flex-col justify-center">
-          <CalendarCheck className="w-10 h-10 text-gray-700 mb-4" />
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Zero Missed Leads</h3>
-          <p className="text-gray-600 text-sm">Every single inquiry is handled instantly.</p>
+        
+        {/* Small Card 1 */}
+        <div className="bg-white dark:bg-gray-950 rounded-3xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col justify-center transition-colors">
+          <Clock className="w-8 h-8 text-emerald-600 dark:text-emerald-500 mb-4" />
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">$0 After-Hours Cost</h3>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">Your AI agent works nights, weekends, and holidays at no extra charge.</p>
         </div>
-        <div className="bg-gray-50 rounded-3xl p-8 border border-gray-100 flex flex-col justify-center">
-          <PhoneCall className="w-10 h-10 text-gray-700 mb-4" />
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Reduced Overhead</h3>
-          <p className="text-gray-600 text-sm">Eliminate the need for after-hours answering services or extra reception staff.</p>
+        
+        {/* Small Card 2 */}
+        <div className="bg-white dark:bg-gray-950 rounded-3xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col justify-center transition-colors">
+          <MessageSquare className="w-8 h-8 text-accent-600 dark:text-accent-500 mb-4" />
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">&lt;60s Response Time</h3>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">Every web inquiry, SMS, and missed call gets an immediate, intelligent response.</p>
         </div>
-        <div className="md:col-span-2 bg-purple-50 rounded-3xl p-8 border border-purple-100 flex flex-col justify-center">
-          <Stethoscope className="w-10 h-10 text-purple-600 mb-4" />
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">Premium Patient Experience</h3>
-          <p className="text-gray-600">No hold times, no voicemails. Patients get instant answers and immediate bookings, making your practice look highly professional.</p>
+        
+        {/* Large Card 2 */}
+        <div className="md:col-span-2 bg-white dark:bg-gray-950 rounded-3xl p-8 lg:p-10 border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col justify-center relative overflow-hidden transition-colors">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-accent-50 dark:bg-accent-900/10 rounded-full blur-3xl -z-10" />
+          <Stethoscope className="w-10 h-10 text-brand-600 dark:text-brand-400 mb-6" />
+          <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">Patients Report Higher Satisfaction Scores</h3>
+          <p className="text-lg text-gray-600 dark:text-gray-400">No hold music. No voicemail. Patients get answers instantly — making your practice feel premium even before they walk in.</p>
         </div>
       </div>
     </div>
   </section>
 );
 
-const CustomPositioning = () => (
-  <section id="custom" className="py-24 bg-gray-900 text-white relative overflow-hidden">
-    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/40 via-gray-900 to-gray-900 pointer-events-none" />
-    <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
-      <motion.div whileInView="visible" initial="hidden" viewport={{ once: true }} variants={fadeUp} className="max-w-3xl mx-auto">
-        <Settings className="w-12 h-12 text-blue-400 mx-auto mb-6" />
-        <h2 className="text-3xl lg:text-5xl font-bold mb-6">Not just another tool. <br/> A custom-engineered solution.</h2>
-        <p className="text-xl text-gray-400 mb-8 leading-relaxed">
-          We don't hand you software and wish you luck. Pyrexx AI acts as your dedicated technical partner. We map your exact workflow, build custom integrations to your specific EMR, and continually optimize your AI agents.
-        </p>
-        <div className="inline-flex items-center space-x-2 text-blue-400 font-semibold bg-blue-900/30 px-6 py-3 rounded-full border border-blue-800/50">
-          <ShieldCheck className="w-5 h-5" />
-          <span>Fully HIPAA Compliant Architecture</span>
+const TrustHIPAA = () => (
+  <section className="py-24 bg-brand-900 text-white relative overflow-hidden">
+    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-brand-800 via-brand-900 to-gray-900 pointer-events-none" />
+    <div className="max-w-7xl mx-auto px-6 relative z-10">
+      <div className="text-center mb-16">
+        <ShieldCheck className="w-16 h-16 text-emerald-400 mx-auto mb-6" />
+        <h2 className="text-3xl lg:text-5xl font-bold mb-4 tracking-tight">Built for Healthcare. Compliant by Design.</h2>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-8 mb-16">
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-sm">
+          <Lock className="w-8 h-8 text-brand-300 mb-4" />
+          <h3 className="text-xl font-bold mb-2">HIPAA Compliant Architecture</h3>
+          <p className="text-gray-400 text-sm leading-relaxed">End-to-end encryption in transit and at rest. Zero Protected Health Information (PHI) is stored beyond the active session context.</p>
         </div>
-      </motion.div>
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-sm">
+          <CheckCircle2 className="w-8 h-8 text-brand-300 mb-4" />
+          <h3 className="text-xl font-bold mb-2">Business Associate Agreement</h3>
+          <p className="text-gray-400 text-sm leading-relaxed">We provide a signed BAA as a standard part of onboarding, legally ensuring your practice's compliance is maintained.</p>
+        </div>
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-sm">
+          <Settings className="w-8 h-8 text-brand-300 mb-4" />
+          <h3 className="text-xl font-bold mb-2">Voice AI You Control</h3>
+          <p className="text-gray-400 text-sm leading-relaxed">Your agent, your voice, your scripts. You maintain full visibility into every call transcript and booking via your secure dashboard.</p>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto">
+        <blockquote className="border-l-4 border-emerald-500 pl-6 py-2">
+          <p className="text-xl lg:text-2xl font-medium text-gray-300 italic mb-4">
+            "In 2024, 725 large healthcare data breaches exposed PHI for 276 million Americans. We built PyrexxAI so your clinic isn't next."
+          </p>
+        </blockquote>
+      </div>
     </div>
   </section>
 );
 
+const CustomPositioning = () => {
+  const prefersReducedMotion = useReducedMotion();
+  const fadeUp = getFadeUpVariants(prefersReducedMotion);
+
+  return (
+    <section className="py-24 bg-white dark:bg-gray-950 text-center transition-colors duration-300">
+      <div className="max-w-5xl mx-auto px-6">
+        <motion.div whileInView="visible" initial="hidden" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}>
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6 tracking-tight">Not just another tool.<br/>A complete technical partner.</h2>
+          <p className="text-lg text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Most AI tools hand you a dashboard and a 12-page manual. We don't. PyrexxAI acts as your dedicated AI implementation team. We map your workflows, build your agent from scratch, integrate with your specific EMR, and handle every edge case — so you can focus on patients, not prompts.
+          </p>
+          
+          <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm max-w-4xl mx-auto text-left">
+            <table className="w-full text-sm lg:text-base border-collapse">
+              <thead>
+                <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 transition-colors">
+                  <th className="py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 w-1/3">Feature</th>
+                  <th className="py-4 px-6 font-semibold text-gray-500 dark:text-gray-400 w-1/3 border-l border-gray-200 dark:border-gray-800">DIY Voice AI Software</th>
+                  <th className="py-4 px-6 font-bold text-brand-700 dark:text-brand-400 w-1/3 border-l border-brand-200 dark:border-brand-900/50 bg-brand-50 dark:bg-brand-900/20">PyrexxAI Agency</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-800 bg-white dark:bg-gray-950">
+                <tr>
+                  <td className="py-4 px-6 font-medium text-gray-900 dark:text-gray-200">Agent Persona</td>
+                  <td className="py-4 px-6 text-gray-500 dark:text-gray-400 border-l border-gray-200 dark:border-gray-800">Generic, template voice</td>
+                  <td className="py-4 px-6 font-medium text-brand-900 dark:text-brand-300 border-l border-brand-200 dark:border-brand-900/50 bg-brand-50/30 dark:bg-brand-900/10">Custom-trained voice & personality</td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-6 font-medium text-gray-900 dark:text-gray-200">Setup Effort</td>
+                  <td className="py-4 px-6 text-gray-500 dark:text-gray-400 border-l border-gray-200 dark:border-gray-800">You configure everything</td>
+                  <td className="py-4 px-6 font-medium text-brand-900 dark:text-brand-300 border-l border-brand-200 dark:border-brand-900/50 bg-brand-50/30 dark:bg-brand-900/10">Done-for-you in 14 days</td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-6 font-medium text-gray-900 dark:text-gray-200">EMR Integration</td>
+                  <td className="py-4 px-6 text-gray-500 dark:text-gray-400 border-l border-gray-200 dark:border-gray-800">Webhook manuals (No direct integration)</td>
+                  <td className="py-4 px-6 font-medium text-brand-900 dark:text-brand-300 border-l border-brand-200 dark:border-brand-900/50 bg-brand-50/30 dark:bg-brand-900/10">Direct booking into your system</td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-6 font-medium text-gray-900 dark:text-gray-200">Ongoing Maintenance</td>
+                  <td className="py-4 px-6 text-gray-500 dark:text-gray-400 border-l border-gray-200 dark:border-gray-800">No ongoing support</td>
+                  <td className="py-4 px-6 font-medium text-brand-900 dark:text-brand-300 border-l border-brand-200 dark:border-brand-900/50 bg-brand-50/30 dark:bg-brand-900/10">Weekly optimization & retraining</td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-6 font-medium text-gray-900 dark:text-gray-200">Compliance</td>
+                  <td className="py-4 px-6 text-gray-500 dark:text-gray-400 border-l border-gray-200 dark:border-gray-800">You figure out HIPAA requirements</td>
+                  <td className="py-4 px-6 font-bold text-emerald-700 dark:text-emerald-400 border-l border-brand-200 dark:border-brand-900/50 bg-brand-50/30 dark:bg-brand-900/10">BAA + Full HIPAA compliance handled</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+const FAQ = () => {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  const faqs = [
+    {
+      q: "What types of clinics does PyrexxAI work with?",
+      a: "MedSpas, dental practices, and therapeutic or mental health clinics. We specialize in high-ticket, high-touch healthcare environments where missing a call means losing significant revenue."
+    },
+    {
+      q: "How is PyrexxAI different from a general AI chatbot?",
+      a: "We are a full-service technical partner, not a DIY software platform. We custom-train voice AI specific to your practice, integrate it directly with your existing EMR, and continually optimize its performance."
+    },
+    {
+      q: "Is your AI voice agent HIPAA compliant?",
+      a: "Yes, absolutely. Our entire architecture is HIPAA compliant by design. We provide a Business Associate Agreement (BAA) and ensure zero Protected Health Information (PHI) is stored beyond the active session context."
+    },
+    {
+      q: "How long does it take to go live?",
+      a: "From our initial kickoff call to your AI receptionist handling live patient calls, the standard timeline is exactly 14 days. This includes mapping your workflows, voice training, and EMR integration."
+    },
+    {
+      q: "Does the AI book directly into my EMR/practice management system?",
+      a: "Yes. We build custom integrations to read your real-time availability and write appointments directly into your existing schedule. No manual data entry is required from your staff."
+    },
+    {
+      q: "What happens if the AI can't answer a patient's question?",
+      a: "If a query falls outside the AI's training or involves a complex medical question, it elegantly escalates the interaction. It takes a detailed message and immediately routes it to your human staff via SMS, email, or your CRM."
+    },
+    {
+      q: "How does PyrexxAI handle after-hours emergencies?",
+      a: "We configure custom routing rules for your practice. Routine inquiries are answered and booked, while calls flagged by the caller as medical emergencies are immediately forwarded to your designated on-call doctor."
+    },
+    {
+      q: "What is the pricing model?",
+      a: "We operate on a transparent monthly retainer that includes the AI infrastructure, continuous optimization, and support. Because we replace expensive after-hours services and capture lost leads, most clinics see positive ROI in the first 30 days."
+    },
+    {
+      q: "Can the AI handle multiple calls simultaneously?",
+      a: "Yes. Your PyrexxAI receptionist can handle an unlimited number of concurrent inbound calls. Whether you receive two calls at once or fifty, no patient is ever put on hold or sent to voicemail."
+    },
+    {
+      q: "Do I need to change my existing phone number or system?",
+      a: "No. You keep your current phone numbers and VOIP system. We simply set up conditional forwarding so that missed calls, or calls during specific hours, are instantly routed to your AI agent."
+    }
+  ];
+
+  return (
+    <section id="faq" className="py-24 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 transition-colors duration-300">
+      <div className="max-w-3xl mx-auto px-6">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">Frequently Asked Questions</h2>
+        </div>
+        <div className="space-y-4">
+          {faqs.map((faq, index) => (
+            <div key={index} className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm transition-colors">
+              <button
+                className="w-full px-6 py-5 text-left flex justify-between items-center focus-visible:outline-none focus-visible:bg-gray-50 dark:focus-visible:bg-gray-800"
+                onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                aria-expanded={openIndex === index}
+                aria-controls={`faq-answer-${index}`}
+              >
+                <span className="font-semibold text-gray-900 dark:text-white pr-4">{faq.q}</span>
+                <ChevronDown className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-200 ${openIndex === index ? 'rotate-180' : ''}`} />
+              </button>
+              <AnimatePresence>
+                {openIndex === index && (
+                  <motion.div
+                    id={`faq-answer-${index}`}
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="px-6 pb-5 text-gray-600 dark:text-gray-400 leading-relaxed"
+                  >
+                    <div className="pt-2 border-t border-gray-100 dark:border-gray-800">{faq.a}</div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const CTA = () => (
-  <section className="py-24 bg-white relative overflow-hidden">
+  <section className="py-32 bg-white dark:bg-gray-950 relative overflow-hidden transition-colors duration-300">
+    <div className="absolute inset-0 bg-brand-50/50 dark:bg-brand-900/10 pointer-events-none" />
     <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-      <h2 className="text-4xl lg:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">
-        Ready to modernize your front desk?
+      <h2 className="text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white mb-6 tracking-tight">
+        Every missed call is a patient choosing your competitor.
       </h2>
-      <p className="text-xl text-gray-600 mb-10">
-        Book a demo to see exactly how Pyrexx AI sounds, acts, and books appointments.
+      <p className="text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto">
+        Book a free 15-minute discovery call. We'll show you exactly how PyrexxAI sounds, how it books, and how much revenue you're currently losing.
       </p>
-      <button className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 rounded-full text-lg font-bold transition-all shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.23)] hover:-translate-y-1">
-        See It In Action
-      </button>
+      <a 
+        href={CAL_LINK}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex bg-brand-600 hover:bg-brand-700 text-white px-10 py-5 rounded-full text-lg font-bold transition-all shadow-cta hover:shadow-cta-hover hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/50 animate-pulse-glow"
+      >
+        Book My Free Demo &rarr;
+      </a>
+      <p className="mt-6 text-sm text-gray-500 dark:text-gray-500 font-medium">
+        No credit card. No long-term contracts. Cancel anytime.
+      </p>
     </div>
   </section>
 );
 
 const Footer = () => (
-  <footer className="bg-gray-50 border-t border-gray-200 py-12">
-    <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
-      <div className="flex items-center space-x-2 mb-4 md:mb-0">
-        <Bot className="text-blue-600 w-6 h-6" />
-        <span className="text-xl font-bold text-gray-900">Pyrexx AI</span>
+  <footer className="bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 pt-16 pb-8 transition-colors duration-300">
+    <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+        <div className="md:col-span-1">
+          <Link href="/" className="flex items-center gap-3 mb-6 group">
+            <div className="relative w-9 h-9 rounded-full bg-brand-600 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform shadow-sm">
+              <Image 
+                src="/logo.png" 
+                alt="PyrexxAI Logo" 
+                fill 
+                sizes="36px"
+                className="object-cover z-10" 
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }} 
+              />
+              <Bot className="text-white w-5 h-5 absolute z-0" />
+            </div>
+            <span className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">PyrexxAI</span>
+          </Link>
+          <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6 max-w-xs">
+            Intelligent voice AI implementations for MedSpas, Dental & Therapy Clinics. Stop missing calls, start scaling.
+          </p>
+          <div className="flex gap-4">
+            <a href="#" aria-label="Instagram" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><Instagram className="w-5 h-5" /></a>
+            <a href="#" aria-label="Twitter" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><Twitter className="w-5 h-5" /></a>
+            <a href="#" aria-label="LinkedIn" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><Linkedin className="w-5 h-5" /></a>
+            <a href="#" aria-label="Facebook" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><Facebook className="w-5 h-5" /></a>
+          </div>
+        </div>
+        
+        <div>
+          <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Solutions</h4>
+          <ul className="space-y-3">
+            <li><a href="#solutions" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">AI Receptionist</a></li>
+            <li><a href="#solutions" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Lead Intake Agent</a></li>
+            <li><a href="#how-it-works" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">EMR Integration</a></li>
+            <li><a href="#how-it-works" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Custom AI Training</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Resources</h4>
+          <ul className="space-y-3">
+            <li><a href="#roi" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">ROI Calculator</a></li>
+            <li><a href="#results" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Client Results</a></li>
+            <li><a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">HIPAA Compliance</a></li>
+            <li><a href="#faq" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Help & FAQ</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Company</h4>
+          <ul className="space-y-3">
+            <li><a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">About Us</a></li>
+            <li><a href="mailto:clifford.pyrexxai@gmail.com" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Contact</a></li>
+            <li><a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Privacy Policy</a></li>
+            <li><a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
       </div>
-      <div className="flex space-x-6 text-sm text-gray-500">
-        <a href="#" className="hover:text-blue-600">Privacy Policy</a>
-        <a href="#" className="hover:text-blue-600">Terms of Service</a>
-        <a href="mailto:clifford.pyrexxai@gmail.com" className="hover:text-blue-600">clifford.pyrexai@gmail.com</a>
+      
+      <div className="border-t border-gray-100 dark:border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <p className="text-sm text-gray-400 dark:text-gray-500">© {new Date().getFullYear()} PyrexxAI. All rights reserved.</p>
+        <div className="flex gap-4">
+           <span className="text-sm text-gray-400 dark:text-gray-500">Engineered for seamless patient experiences.</span>
+        </div>
       </div>
-    </div>
-    <div className="max-w-7xl mx-auto px-6 mt-8 text-center text-sm text-gray-400">
-      © {new Date().getFullYear()} Pyrexx AI. All rights reserved. Built for modern medical practices.
     </div>
   </footer>
 );
 
 export default function PyrexxAILandingPage() {
   return (
-    <main className="min-h-screen bg-white font-sans selection:bg-blue-100 selection:text-blue-900">
+    <main className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-50 selection:bg-brand-100 dark:selection:bg-brand-900/50 selection:text-brand-900 dark:selection:text-brand-100 transition-colors duration-300">
       <Navbar />
       <Hero />
+      <StatsBar />
       <SocialProof />
       <Offerings />
       <HowItWorks />
-      <Benefits />
+      <ROICalculator />
+      <Results />
+      <TrustHIPAA />
       <CustomPositioning />
+      <FAQ />
       <CTA />
       <Footer />
     </main>
