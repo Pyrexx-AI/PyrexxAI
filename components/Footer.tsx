@@ -36,28 +36,28 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Solutions</h4>
             <ul className="space-y-3">
-              <li><a href="#solutions" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">AI Receptionist</a></li>
-              <li><a href="#solutions" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Lead Intake Agent</a></li>
-              <li><a href="#how-it-works" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">EMR Integration</a></li>
-              <li><a href="#how-it-works" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Custom AI Training</a></li>
+              <li><Link href="/ai-receptionist" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">AI Receptionist</Link></li>
+              <li><Link href="/#solutions" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Lead Intake Agent</Link></li>
+              <li><Link href="/#how-it-works" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">EMR Integration</Link></li>
+              <li><Link href="/#how-it-works" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Custom AI Training</Link></li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Resources</h4>
             <ul className="space-y-3">
-              <li><a href="#roi" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">ROI Calculator</a></li>
-              <li><a href="#results" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Client Results</a></li>
-              <li><a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">HIPAA Compliance</a></li>
-              <li><a href="#faq" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Help & FAQ</a></li>
+              <li><Link href="/#roi" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">ROI Calculator</Link></li>
+              <li><Link href="/#results" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Client Results</Link></li>
+              <li><Link href="/hipaa-compliance" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">HIPAA Compliance</Link></li>
+              <li><Link href="/#faq" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Help & FAQ</Link></li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Company</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">About Us</a></li>
-              <li><a href="mailto:clifford.pyrexxai@gmail.com" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Contact</a></li>
-              <li><a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Terms of Service</a></li>
+              <li><Link href="/#how-it-works" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">About Us</Link></li>
+              <li><Link href="/contact" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Contact</Link></li>
+              <li><Link href="/hipaa-compliance" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/hipaa-compliance" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Terms of Service</Link></li>
             </ul>
           </div>
         </div>
