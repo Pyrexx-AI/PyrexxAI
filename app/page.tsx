@@ -857,6 +857,7 @@ const Footer = () => (
           <ul className="space-y-3">
             <li><a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">About Us</a></li>
             <li><a href="mailto:clifford.pyrexxai@gmail.com" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Contact</a></li>
+						<li><a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Careers</a></li>
             <li><a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Privacy Policy</a></li>
             <li><a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Terms of Service</a></li>
           </ul>
@@ -866,7 +867,7 @@ const Footer = () => (
       <div className="border-t border-gray-100 dark:border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
         <p className="text-sm text-gray-400 dark:text-gray-500">© {new Date().getFullYear()} PyrexxAI. All rights reserved.</p>
         <div className="flex gap-4">
-           <span className="text-sm text-gray-400 dark:text-gray-500">Engineered for seamless patient experiences.</span>
+           <span className="text-sm text-gray-400 dark:text-gray-500">Engineered by Pyrexx for seamless patient experiences.</span>
         </div>
       </div>
     </div>
