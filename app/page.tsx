@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -15,16 +15,27 @@ import {
   CheckCircle2,
   Lock,
   Menu,
-  X,
+  X as CloseIcon,
   ChevronDown,
   Clock,
   Smartphone,
   Bot,
   Instagram,
-  Twitter,
   Facebook,
   Linkedin
 } from "lucide-react";
+
+// --- CUSTOM ICONS ---
+const XIcon = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+  >
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 // --- ANIMATION VARIANTS ---
 const getFadeUpVariants = (prefersReducedMotion: boolean | null) => {
@@ -60,16 +71,29 @@ const CAL_LINK = "https://cal.com/clifford-bulya/15min";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
   return (
     <nav className="fixed top-0 w-full bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg z-50 border-b border-gray-100/60 dark:border-gray-800/60 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <Link href="/" className="flex items-center space-x-2 relative z-50 group" aria-label="PyrexxAI Home">
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between relative z-50">
+        <Link href="/" className="flex items-center space-x-2 group" aria-label="PyrexxAI Home" onClick={() => setIsOpen(false)}>
           <div className="relative w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform">
             <Image 
               src="/logo.png" 
               alt="PyrexxAI Logo" 
               fill 
               sizes="32px"
+              quality={100}
               className="object-cover z-10" 
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
@@ -100,36 +124,39 @@ const Navbar = () => {
 
         {/* Mobile Toggle */}
         <button 
-          className="md:hidden p-2 text-gray-600 dark:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-md relative z-50"
+          className="md:hidden p-2 text-gray-600 dark:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-md"
           onClick={() => setIsOpen(!isOpen)}
           aria-label={isOpen ? "Close menu" : "Open menu"}
         >
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {isOpen ? <CloseIcon className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isOpen && (
           <motion.div 
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="absolute top-20 left-0 w-full bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 shadow-xl py-4 px-6 flex flex-col space-y-4 md:hidden z-40"
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="absolute top-20 left-0 w-full h-[calc(100vh-80px)] bg-white dark:bg-gray-950 shadow-xl p-6 flex flex-col space-y-6 md:hidden z-40 overflow-y-auto"
           >
-            <a href="#solutions" onClick={() => setIsOpen(false)} className="text-gray-900 dark:text-white font-medium py-2">Solutions</a>
-            <a href="#how-it-works" onClick={() => setIsOpen(false)} className="text-gray-900 dark:text-white font-medium py-2">How it Works</a>
-            <a href="#results" onClick={() => setIsOpen(false)} className="text-gray-900 dark:text-white font-medium py-2">Results</a>
-            <a href="#faq" onClick={() => setIsOpen(false)} className="text-gray-900 dark:text-white font-medium py-2">FAQ</a>
-            <a
-              href={CAL_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setIsOpen(false)}
-              className="bg-brand-600 text-white px-5 py-3 rounded-xl text-center font-medium shadow-cta"
-            >
-              Book a Free Demo &rarr;
-            </a>
+            <a href="#solutions" onClick={() => setIsOpen(false)} className="text-gray-900 dark:text-white text-lg font-medium py-2 border-b border-gray-100 dark:border-gray-800">Solutions</a>
+            <a href="#how-it-works" onClick={() => setIsOpen(false)} className="text-gray-900 dark:text-white text-lg font-medium py-2 border-b border-gray-100 dark:border-gray-800">How it Works</a>
+            <a href="#results" onClick={() => setIsOpen(false)} className="text-gray-900 dark:text-white text-lg font-medium py-2 border-b border-gray-100 dark:border-gray-800">Results</a>
+            <a href="#faq" onClick={() => setIsOpen(false)} className="text-gray-900 dark:text-white text-lg font-medium py-2 border-b border-gray-100 dark:border-gray-800">FAQ</a>
+            <div className="pt-4">
+              <a
+                href={CAL_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsOpen(false)}
+                className="block w-full bg-brand-600 text-white px-5 py-4 rounded-xl text-center font-bold shadow-cta text-lg"
+              >
+                Book a Free Demo &rarr;
+              </a>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -151,10 +178,6 @@ const Hero = () => {
 
       <div className="max-w-7xl mx-auto px-6 text-center">
         <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-4xl mx-auto space-y-8">
-          <motion.div variants={fadeUp} className="inline-flex items-center space-x-2 bg-brand-50 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800/50 px-4 py-2 rounded-full text-brand-700 dark:text-brand-300 text-sm font-medium">
-            <span className="text-brand-600 dark:text-brand-400">✦</span>
-            <span>Purpose-built for MedSpas, Dental & Therapy Clinics</span>
-          </motion.div>
           
           <motion.h1 variants={fadeUp} className="text-[clamp(2.5rem,6vw,4.5rem)] font-extrabold tracking-tight text-gray-900 dark:text-white leading-[1.1]">
             Your Clinic's Front Desk.<br/>
@@ -274,6 +297,97 @@ const StatsBar = () => (
     </div>
   </section>
 );
+
+const ROICalculator = () => {
+  const [calls, setCalls] = useState(200);
+  const [missedRate, setMissedRate] = useState(35);
+  const [ltv, setLtv] = useState(3000);
+  
+  const missedCalls = Math.round(calls * (missedRate / 100));
+  const monthlyRisk = missedCalls * ltv;
+  const annualRisk = monthlyRisk * 12;
+
+  const formatCurrency = (val: number) => 
+    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
+
+  return (
+    <section id="roi" className="py-12 md:py-24 bg-white dark:bg-gray-950 transition-colors duration-300">
+      <div className="max-w-5xl mx-auto px-6">
+        <div className="bg-gradient-to-br from-brand-50 to-brand-100/50 dark:from-gray-900 dark:to-gray-800/50 rounded-3xl p-6 md:p-8 lg:p-12 border border-brand-100 dark:border-gray-700 shadow-sm">
+          <div className="text-center mb-6 md:mb-10">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-brand-900 dark:text-white mb-2 md:mb-4 tracking-tight">Calculate Your Lost Revenue</h2>
+            <p className="text-base md:text-lg text-brand-700/80 dark:text-gray-400">See how much revenue is walking out the door due to missed calls.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+            {/* Sliders */}
+            <div className="space-y-5 md:space-y-8">
+              <div>
+                <div className="flex justify-between mb-2">
+                  <label className="text-sm md:text-base font-semibold text-brand-900 dark:text-gray-200">Monthly Inbound Calls</label>
+                  <span className="font-bold text-brand-700 dark:text-brand-400 stat-number">{calls}</span>
+                </div>
+                <input 
+                  type="range" min="50" max="2000" step="10" value={calls} onChange={(e) => setCalls(Number(e.target.value))}
+                  className="w-full h-2 bg-white dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brand-600"
+                  aria-label="Monthly inbound calls slider"
+                />
+              </div>
+              <div>
+                <div className="flex justify-between mb-2">
+                  <label className="text-sm md:text-base font-semibold text-brand-900 dark:text-gray-200">Missed Call Rate (%)</label>
+                  <span className="font-bold text-brand-700 dark:text-brand-400 stat-number">{missedRate}%</span>
+                </div>
+                <input 
+                  type="range" min="10" max="70" step="1" value={missedRate} onChange={(e) => setMissedRate(Number(e.target.value))}
+                  className="w-full h-2 bg-white dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brand-600"
+                  aria-label="Missed call rate slider"
+                />
+              </div>
+              <div>
+                <div className="flex justify-between mb-2">
+                  <label className="text-sm md:text-base font-semibold text-brand-900 dark:text-gray-200">Avg. Patient Lifetime Value</label>
+                  <span className="font-bold text-brand-700 dark:text-brand-400 stat-number">${ltv}</span>
+                </div>
+                <input 
+                  type="range" min="500" max="15000" step="100" value={ltv} onChange={(e) => setLtv(Number(e.target.value))}
+                  className="w-full h-2 bg-white dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brand-600"
+                  aria-label="Patient lifetime value slider"
+                />
+              </div>
+            </div>
+
+            {/* Output */}
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 md:p-8 shadow-card dark:shadow-none border border-gray-100 dark:border-gray-700 flex flex-col justify-center transition-colors">
+              <div className="space-y-4 md:space-y-6">
+                <div className="border-b border-gray-100 dark:border-gray-800 pb-3 md:pb-4">
+                  <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Missed Opportunities</p>
+                  <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white stat-number">{missedCalls} <span className="text-base md:text-lg text-gray-500 dark:text-gray-500 font-normal">calls/mo</span></p>
+                </div>
+                <div className="border-b border-gray-100 dark:border-gray-800 pb-3 md:pb-4">
+                  <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Monthly Revenue at Risk</p>
+                  <p className="text-2xl md:text-3xl font-bold text-amber-600 dark:text-amber-500 stat-number">{formatCurrency(monthlyRisk)}</p>
+                </div>
+                <div>
+                  <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Annual Revenue at Risk</p>
+                  <p className="text-3xl md:text-4xl font-extrabold text-red-600 dark:text-red-500 stat-number">{formatCurrency(annualRisk)}</p>
+                </div>
+              </div>
+              <a 
+                href={CAL_LINK} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="mt-6 md:mt-8 w-full bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 md:py-4 rounded-xl text-center font-bold transition-all shadow-cta hover:shadow-cta-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 text-sm md:text-base"
+              >
+                Recover This Revenue &rarr;
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const SocialProof = () => (
   <section className="py-16 bg-gray-50/50 dark:bg-gray-900/50 transition-colors duration-300">
@@ -431,97 +545,6 @@ const HowItWorks = () => {
               <p className="text-gray-600 dark:text-gray-400 text-center md:text-left leading-relaxed">{step.desc}</p>
             </motion.div>
           ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const ROICalculator = () => {
-  const [calls, setCalls] = useState(200);
-  const [missedRate, setMissedRate] = useState(35);
-  const [ltv, setLtv] = useState(3000);
-  
-  const missedCalls = Math.round(calls * (missedRate / 100));
-  const monthlyRisk = missedCalls * ltv;
-  const annualRisk = monthlyRisk * 12;
-
-  const formatCurrency = (val: number) => 
-    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
-
-  return (
-    <section id="roi" className="py-24 bg-white dark:bg-gray-950 transition-colors duration-300">
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="bg-gradient-to-br from-brand-50 to-brand-100/50 dark:from-gray-900 dark:to-gray-800/50 rounded-3xl p-8 lg:p-12 border border-brand-100 dark:border-gray-700 shadow-sm">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl lg:text-4xl font-bold text-brand-900 dark:text-white mb-4 tracking-tight">Calculate Your Lost Revenue</h2>
-            <p className="text-lg text-brand-700/80 dark:text-gray-400">See how much revenue is walking out the door due to missed calls.</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            {/* Sliders */}
-            <div className="space-y-8">
-              <div>
-                <div className="flex justify-between mb-2">
-                  <label className="font-semibold text-brand-900 dark:text-gray-200">Monthly Inbound Calls</label>
-                  <span className="font-bold text-brand-700 dark:text-brand-400 stat-number">{calls}</span>
-                </div>
-                <input 
-                  type="range" min="50" max="2000" step="10" value={calls} onChange={(e) => setCalls(Number(e.target.value))}
-                  className="w-full h-2 bg-white dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brand-600"
-                  aria-label="Monthly inbound calls slider"
-                />
-              </div>
-              <div>
-                <div className="flex justify-between mb-2">
-                  <label className="font-semibold text-brand-900 dark:text-gray-200">Missed Call Rate (%)</label>
-                  <span className="font-bold text-brand-700 dark:text-brand-400 stat-number">{missedRate}%</span>
-                </div>
-                <input 
-                  type="range" min="10" max="70" step="1" value={missedRate} onChange={(e) => setMissedRate(Number(e.target.value))}
-                  className="w-full h-2 bg-white dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brand-600"
-                  aria-label="Missed call rate slider"
-                />
-              </div>
-              <div>
-                <div className="flex justify-between mb-2">
-                  <label className="font-semibold text-brand-900 dark:text-gray-200">Avg. Patient Lifetime Value</label>
-                  <span className="font-bold text-brand-700 dark:text-brand-400 stat-number">${ltv}</span>
-                </div>
-                <input 
-                  type="range" min="500" max="15000" step="100" value={ltv} onChange={(e) => setLtv(Number(e.target.value))}
-                  className="w-full h-2 bg-white dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brand-600"
-                  aria-label="Patient lifetime value slider"
-                />
-              </div>
-            </div>
-
-            {/* Output */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-card dark:shadow-none border border-gray-100 dark:border-gray-700 flex flex-col justify-center transition-colors">
-              <div className="space-y-6">
-                <div className="border-b border-gray-100 dark:border-gray-800 pb-4">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Missed Opportunities</p>
-                  <p className="text-3xl font-bold text-gray-900 dark:text-white stat-number">{missedCalls} <span className="text-lg text-gray-500 dark:text-gray-500 font-normal">calls/mo</span></p>
-                </div>
-                <div className="border-b border-gray-100 dark:border-gray-800 pb-4">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Monthly Revenue at Risk</p>
-                  <p className="text-3xl font-bold text-amber-600 dark:text-amber-500 stat-number">{formatCurrency(monthlyRisk)}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Annual Revenue at Risk</p>
-                  <p className="text-4xl font-extrabold text-red-600 dark:text-red-500 stat-number">{formatCurrency(annualRisk)}</p>
-                </div>
-              </div>
-              <a 
-                href={CAL_LINK} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="mt-8 w-full bg-brand-600 hover:bg-brand-700 text-white px-6 py-4 rounded-xl text-center font-bold transition-all shadow-cta hover:shadow-cta-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-              >
-                Recover This Revenue &rarr;
-              </a>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -788,6 +811,7 @@ const Footer = () => (
                 alt="PyrexxAI Logo" 
                 fill 
                 sizes="36px"
+                quality={100}
                 className="object-cover z-10" 
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
@@ -802,7 +826,7 @@ const Footer = () => (
           </p>
           <div className="flex gap-4">
             <a href="#" aria-label="Instagram" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><Instagram className="w-5 h-5" /></a>
-            <a href="#" aria-label="Twitter" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><Twitter className="w-5 h-5" /></a>
+            <a href="#" aria-label="X (formerly Twitter)" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><XIcon className="w-5 h-5" /></a>
             <a href="#" aria-label="LinkedIn" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><Linkedin className="w-5 h-5" /></a>
             <a href="#" aria-label="Facebook" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><Facebook className="w-5 h-5" /></a>
           </div>
@@ -855,10 +879,10 @@ export default function PyrexxAILandingPage() {
       <Navbar />
       <Hero />
       <StatsBar />
+      <ROICalculator />
       <SocialProof />
       <Offerings />
       <HowItWorks />
-      <ROICalculator />
       <Results />
       <TrustHIPAA />
       <CustomPositioning />

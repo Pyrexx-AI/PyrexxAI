@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   },
   description:
     "PyrexxAI deploys custom-trained AI voice receptionists for MedSpas, dental clinics, and therapy practices. Capture every call 24/7, book appointments automatically, and eliminate missed revenue — HIPAA-compliant.",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
   keywords: [
     "AI receptionist for medspa",
     "AI voice agent dental clinic",
@@ -183,6 +188,9 @@ export default function RootLayout({
   // Added suppressHydrationWarning to squelch extension-based warnings like "js-focus-visible"
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/logo.png" sizes="any" />
+      </head>
       <body className={`${inter.variable} font-sans antialiased text-gray-900 bg-white dark:bg-gray-950 dark:text-gray-50 transition-colors duration-300`}>
         <Script
           id="schema-org"
