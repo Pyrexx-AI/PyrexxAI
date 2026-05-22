@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
-import { PhoneCall, CalendarCheck, Clock, Layers } from "lucide-react";
+import { PhoneCall, CalendarCheck, Clock, Layers, CheckCircle2 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "AI Voice Receptionist for Medical Clinics",
