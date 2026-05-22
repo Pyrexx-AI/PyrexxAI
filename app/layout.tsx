@@ -82,20 +82,36 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Schema.org structured data JSON objects
   const orgSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "PyrexxAI",
     url: "https://pyrexxai.com",
     logo: "https://pyrexxai.com/logo.png",
+    sameAs: [
+      "https://www.linkedin.com/company/pyrexxai",
+      "https://twitter.com/pyrexxai",
+      "https://www.instagram.com/pyrexxai"
+    ],
     contactPoint: {
       "@type": "ContactPoint",
       email: "clifford.pyrexxai@gmail.com",
       contactType: "sales",
       availableLanguage: "English",
+      areaServed: "US"
     },
-    sameAs: [],
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "PyrexxAI",
+    url: "https://pyrexxai.com",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://pyrexxai.com/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
   };
 
   const serviceSchema = {
@@ -109,6 +125,13 @@ export default function RootLayout({
     areaServed: "US",
     description:
       "Custom-trained AI voice agents for MedSpas, dental clinics, and therapy practices. Handles inbound calls, books appointments, qualifies leads, and integrates with EMR systems — HIPAA-compliant.",
+    offers: {
+      "@type": "Offer",
+      price: "1499",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+      description: "Comprehensive AI receptionist setup, custom voice model training, EMR integration, and weekly optimization."
+    },
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "PyrexxAI Services",
@@ -118,8 +141,7 @@ export default function RootLayout({
           itemOffered: {
             "@type": "Service",
             name: "AI Receptionist",
-            description:
-              "24/7 inbound call handling, appointment booking, and EMR integration for healthcare clinics.",
+            description: "24/7 inbound call handling, appointment booking, and direct EMR integration for healthcare clinics."
           },
         },
         {
@@ -127,8 +149,7 @@ export default function RootLayout({
           itemOffered: {
             "@type": "Service",
             name: "AI Lead Intake Specialist",
-            description:
-              "Automated SMS, web chat, and social lead qualification and booking for MedSpas and clinics.",
+            description: "Automated SMS, web chat, and social lead qualification and booking for MedSpas and clinics."
           },
         },
       ],
@@ -187,33 +208,17 @@ export default function RootLayout({
     ],
   };
 
-  // Added suppressHydrationWarning to squelch extension-based warnings like "js-focus-visible"
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/logo.png" sizes="any" />
       </head>
       <body className={`${inter.variable} font-sans antialiased text-gray-900 bg-white dark:bg-gray-950 dark:text-gray-50 transition-colors duration-300`}>
-        <Script
-          id="schema-org"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
-        />
-        <Script
-          id="schema-service"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
-        />
-        <Script
-          id="schema-howto"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
-        />
-        <Script
-          id="schema-faq"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-        />
+        <Script id="schema-org" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
+        <Script id="schema-website" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
+        <Script id="schema-service" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
+        <Script id="schema-howto" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
+        <Script id="schema-faq" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
         {children}
         <Analytics />
         <SpeedInsights />
