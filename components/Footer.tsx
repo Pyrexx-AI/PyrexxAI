@@ -27,7 +27,7 @@ export default function Footer() {
               Intelligent voice AI implementations for MedSpas, Dental & Therapy Clinics. Stop missing calls, start scaling.
             </p>
             <div className="flex gap-4">
-              <a href="https://github.com/PyrexxAI" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><Github className="w-5 h-5" /></a>
+              <a href="https://github.com/Pyrexx-AI" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><Github className="w-5 h-5" /></a>
               <a href="#" aria-label="X (formerly Twitter)" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><XIcon className="w-5 h-5" /></a>
               <a href="#" aria-label="LinkedIn" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><Linkedin className="w-5 h-5" /></a>
             </div>

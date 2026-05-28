@@ -7,6 +7,15 @@ const nextConfig = {
     remotePatterns: [], 
   },
   compress: true,
+  // Next.js 14 specific config to bypass Webpack for React Email
+  experimental: {
+    serverComponentsExternalPackages: [
+      '@react-email/components',
+      '@react-email/render',
+      'html-to-text',
+      'resend'
+    ],
+  },
   async headers() {
     return [
       {
@@ -38,4 +47,4 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+module.exports = nextConfig;

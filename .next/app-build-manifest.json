@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/ai-receptionist/page": [
+    "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/ai-receptionist/page.js"
+      "static/chunks/app/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
@@ -11,15 +11,15 @@
       "static/css/css-app_globals_css-node_modules_next_font_google_target_css.css",
       "static/chunks/app/layout.js"
     ],
-    "/hipaa-compliance/page": [
+    "/about/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/hipaa-compliance/page.js"
+      "static/chunks/app/about/page.js"
     ],
-    "/page": [
+    "/ai-receptionist/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+      "static/chunks/app/ai-receptionist/page.js"
     ]
   }
 }
