@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Bot, Instagram, Linkedin, Facebook } from "lucide-react";
+import { Bot, Linkedin, Github } from "lucide-react";
 import { CAL_LINK } from "@/lib/utils";
 
 const XIcon = ({ className }: { className?: string }) => (
@@ -27,10 +27,9 @@ export default function Footer() {
               Intelligent voice AI implementations for MedSpas, Dental & Therapy Clinics. Stop missing calls, start scaling.
             </p>
             <div className="flex gap-4">
-              <a href="#" aria-label="Instagram" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><Instagram className="w-5 h-5" /></a>
+              <a href="https://github.com/PyrexxAI" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><Github className="w-5 h-5" /></a>
               <a href="#" aria-label="X (formerly Twitter)" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><XIcon className="w-5 h-5" /></a>
               <a href="#" aria-label="LinkedIn" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><Linkedin className="w-5 h-5" /></a>
-              <a href="#" aria-label="Facebook" className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"><Facebook className="w-5 h-5" /></a>
             </div>
           </div>
           <div>
@@ -54,10 +53,10 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Company</h4>
             <ul className="space-y-3">
-              <li><Link href="/#how-it-works" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">About Us</Link></li>
+              <li><Link href="/about" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">About Us</Link></li>
               <li><Link href="/contact" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Contact</Link></li>
-              <li><Link href="/hipaa-compliance" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/hipaa-compliance" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Terms of Service</Link></li>
+              <li><Link href="/privacy-policy" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms-of-service" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Terms of Service</Link></li>
             </ul>
           </div>
         </div>

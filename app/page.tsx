@@ -1,16 +1,13 @@
 import dynamic from 'next/dynamic';
 
-// Static/Above-the-fold components
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import StatsBar from '@/components/StatsBar';
-import SocialProof from '@/components/SocialProof';
 import Results from '@/components/Results';
 import TrustHIPAA from '@/components/TrustHIPAA';
 import CTA from '@/components/CTA';
 import Footer from '@/components/Footer';
 
-// Dynamically imported components (Lazy loaded to reduce initial JS payload)
 const ROICalculator = dynamic(() => import('@/components/ROICalculator'), { ssr: true });
 const Offerings = dynamic(() => import('@/components/Offerings'), { ssr: true });
 const HowItWorks = dynamic(() => import('@/components/HowItWorks'), { ssr: true });
@@ -24,7 +21,6 @@ export default function PyrexxAILandingPage() {
       <Hero />
       <StatsBar />
       <ROICalculator />
-      <SocialProof />
       <Offerings />
       <HowItWorks />
       <Results />

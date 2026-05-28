@@ -28,6 +28,16 @@ export default function ContactForm() {
         </div>
       ) : (
         <form action={clientAction} className="space-y-6">
+          {/* Honeypot Field for Spam Bots */}
+          <input 
+            type="text" 
+            name="website" 
+            tabIndex={-1} 
+            autoComplete="off" 
+            style={{ display: "none" }} 
+            aria-hidden="true" 
+          />
+
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label htmlFor="name" className="text-sm font-semibold text-gray-900 dark:text-gray-200">Full Name *</label>

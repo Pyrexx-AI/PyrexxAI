@@ -4,11 +4,20 @@ import { Resend } from "resend";
 import ContactTemplate from "@/components/emails/ContactTemplate";
 import React from "react";
 
-// Initialize Resend with the API key from your .env file
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function submitContactForm(prevState: any, formData: FormData) {
   try {
+    // Honeypot check
+    const honeypot = formData.get("website") as string;
+    if (honeypot) {
+      // Silently succeed to trick the bot
+      return {
+        success: true,
+        message: "Your inquiry has been securely submitted. We will contact you shortly.",
+      };
+    }
+
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
     const clinic = formData.get("clinic") as string;
@@ -22,8 +31,8 @@ export async function submitContactForm(prevState: any, formData: FormData) {
     }
 
     const { error } = await resend.emails.send({
-      from: "PyrexxAI Leads <leads@pyrexxai.com>", // Must be a verified domain in Resend
-      to: ["clifford.pyrexxai@gmail.com"], // Your receiving email
+      from: "PyrexxAI Leads <leads@pyrexxai.com>", 
+      to: ["hello@pyrexxai.com"], 
       subject: `New AI Integration Inquiry from ${clinic || name}`,
       react: React.createElement(ContactTemplate, {
         name,

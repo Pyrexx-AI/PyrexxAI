@@ -32,7 +32,6 @@ export default function ContactPage() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-12 items-start">
-          {/* Contact Info Column */}
           <div className="lg:col-span-1 space-y-8">
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 shadow-sm">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Direct Channels</h3>
@@ -41,8 +40,17 @@ export default function ContactPage() {
                   <Mail className="w-6 h-6 text-brand-600 dark:text-brand-400 mr-4 flex-shrink-0" />
                   <div>
                     <h4 className="font-semibold text-gray-900 dark:text-white">Email Us</h4>
-                    <a href="mailto:clifford.pyrexxai@gmail.com" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
-                      clifford.pyrexxai@gmail.com
+                    <a href="mailto:hello@pyrexxai.com" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
+                      hello@pyrexxai.com
+                    </a>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <Phone className="w-6 h-6 text-brand-600 dark:text-brand-400 mr-4 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white">Call Our AI Agent</h4>
+                    <a href="tel:+15550000000" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
+                      +1 (302) 337-6310
                     </a>
                   </div>
                 </li>
@@ -68,7 +76,6 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Form Column */}
           <div className="lg:col-span-2">
             <ContactForm />
           </div>
