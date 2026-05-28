@@ -1,6 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
+import AIAssistant from "@/components/AIAssistant";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -8,6 +10,15 @@ const inter = Inter({
   variable: "--font-inter",
   display: "swap",
 });
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#030712" }, // Tailwind gray-950
+  ],
+  width: "device-width",
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://pyrexxai.com"),
@@ -18,9 +29,25 @@ export const metadata: Metadata = {
   description:
     "PyrexxAI deploys custom-trained AI voice receptionists for MedSpas, dental clinics, and therapy practices. Capture every call 24/7, book appointments automatically, and eliminate missed revenue — HIPAA-compliant.",
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: [
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    other: [
+      {
+        rel: "mask-icon",
+        url: "/safari-pinned-tab.svg",
+        color: "#2563eb", // Tailwind brand-600
+      },
+    ],
+  },
+  manifest: "/site.webmanifest",
+  appleWebApp: {
+    title: "PyrexxAI",
+    statusBarStyle: "default",
   },
   keywords: [
     "AI receptionist for medspa",
@@ -87,13 +114,11 @@ export default function RootLayout({
     url: "https://pyrexxai.com",
     logo: "https://pyrexxai.com/logo.png",
     sameAs: [
-      "https://www.linkedin.com/company/pyrexxai",
-      "https://twitter.com/pyrexxai",
-      "https://www.instagram.com/pyrexxai"
+      "https://github.com/PyrexxAI"
     ],
     contactPoint: {
       "@type": "ContactPoint",
-      email: "clifford.pyrexxai@gmail.com",
+      email: "hello@pyrexxai.com",
       contactType: "sales",
       availableLanguage: "English",
       areaServed: "US"
@@ -123,13 +148,6 @@ export default function RootLayout({
     areaServed: "US",
     description:
       "Custom-trained AI voice agents for MedSpas, dental clinics, and therapy practices. Handles inbound calls, books appointments, qualifies leads, and integrates with EMR systems — HIPAA-compliant.",
-    offers: {
-      "@type": "Offer",
-      price: "1499",
-      priceCurrency: "USD",
-      availability: "https://schema.org/InStock",
-      description: "Comprehensive AI receptionist setup, custom voice model training, EMR integration, and weekly optimization."
-    },
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "PyrexxAI Services",
@@ -197,27 +215,93 @@ export default function RootLayout({
       },
       {
         "@type": "Question",
+        name: "How is PyrexxAI different from a general AI chatbot?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "We are a full-service technical partner, not a DIY software platform. We custom-train voice AI specific to your practice, integrate it directly with your existing EMR, and continually optimize its performance."
+        }
+      },
+      {
+        "@type": "Question",
         name: "Is your AI voice agent HIPAA compliant?",
         acceptedAnswer: {
           "@type": "Answer",
           text: "Yes, absolutely. Our entire architecture is HIPAA compliant by design. We provide a Business Associate Agreement (BAA) and ensure zero Protected Health Information (PHI) is stored beyond the active session.",
         },
       },
+      {
+        "@type": "Question",
+        name: "How long does it take to go live?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "From our initial kickoff call to your AI receptionist handling live patient calls, the standard timeline is exactly 14 days. This includes mapping your workflows, voice training, and EMR integration."
+        }
+      },
+      {
+        "@type": "Question",
+        name: "Does the AI book directly into my EMR/practice management system?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes. We build custom integrations to read your real-time availability and write appointments directly into your existing schedule. No manual data entry is required from your staff."
+        }
+      },
+      {
+        "@type": "Question",
+        name: "What happens if the AI can't answer a patient's question?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "If a query falls outside the AI's training or involves a complex medical question, it elegantly escalates the interaction. It takes a detailed message and immediately routes it to your human staff via SMS, email, or your CRM."
+        }
+      },
+      {
+        "@type": "Question",
+        name: "How does PyrexxAI handle after-hours emergencies?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "We configure custom routing rules for your practice. Routine inquiries are answered and booked, while calls flagged by the caller as medical emergencies are immediately forwarded to your designated on-call doctor."
+        }
+      },
+      {
+        "@type": "Question",
+        name: "What is the pricing model?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "We operate on a transparent monthly retainer that includes the AI infrastructure, continuous optimization, and support. Pricing is custom-quoted based on your clinic's call volume and EMR complexity. Because we replace expensive after-hours services and capture lost leads, most clinics see positive ROI in the first 30 days."
+        }
+      },
+      {
+        "@type": "Question",
+        name: "Can the AI handle multiple calls simultaneously?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes. Your PyrexxAI receptionist can handle an unlimited number of concurrent inbound calls. Whether you receive two calls at once or fifty, no patient is ever put on hold or sent to voicemail."
+        }
+      },
+      {
+        "@type": "Question",
+        name: "Do I need to change my existing phone number or system?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "No. You keep your current phone numbers and VOIP system. We simply set up conditional forwarding so that missed calls, or calls during specific hours, are instantly routed to your AI agent."
+        }
+      }
     ],
   };
 
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/logo.png" sizes="any" />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       </head>
       <body className={`${inter.variable} font-sans antialiased text-gray-900 bg-white dark:bg-gray-950 dark:text-gray-50 transition-colors duration-300`}>
-        <Script id="schema-org" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
-        <Script id="schema-website" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
-        <Script id="schema-service" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
-        <Script id="schema-howto" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
-        <Script id="schema-faq" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <AIAssistant />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
