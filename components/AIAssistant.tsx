@@ -9,31 +9,49 @@ import { CAL_LINK } from "@/lib/utils";
 type Message = {
   id: string;
   role: "ai" | "user";
-  content: string | React.ReactNode;
+  content: string; // Changed to strictly string to allow clean JSON serialization
+  isLink?: boolean;
+};
+
+const defaultMessage: Message = {
+  id: "1",
+  role: "ai",
+  content: "Hi there! 👋 I'm the PyrexxAI virtual assistant. How can I help you modernize your clinic today?",
 };
 
 export default function AIAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [mounted, setMounted] = useState(false);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "ai",
-      content: "Hi there! 👋 I'm the PyrexxAI virtual assistant. How can I help you modernize your clinic today?",
-    },
-  ]);
+  // Load chat history from session storage on mount
+  useEffect(() => {
+    setMounted(true);
+    const savedMessages = sessionStorage.getItem("pyrexxai-chat-history");
+    if (savedMessages) {
+      setMessages(JSON.parse(savedMessages));
+    } else {
+      setMessages([defaultMessage]);
+    }
+  }, []);
+
+  // Save chat history whenever messages update
+  useEffect(() => {
+    if (mounted) {
+      sessionStorage.setItem("pyrexxai-chat-history", JSON.stringify(messages));
+    }
+  }, [messages, mounted]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
-    if (isOpen) {
-      scrollToBottom();
-    }
+    if (isOpen) scrollToBottom();
   }, [messages, isOpen, isTyping]);
 
   const handleSendMessage = (e: React.FormEvent) => {
@@ -56,22 +74,15 @@ export default function AIAssistant() {
       const newAIMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: "ai",
-        content: (
-          <span>
-            That sounds like something our engineering team can help with! For the fastest response, I highly recommend scheduling a{" "}
-            <a href={CAL_LINK} target="_blank" rel="noopener noreferrer" className="text-brand-600 dark:text-brand-400 font-semibold hover:underline">
-              15-minute discovery call
-            </a>{" "}
-            or submitting details via our{" "}
-            <Link href="/contact" className="text-brand-600 dark:text-brand-400 font-semibold hover:underline" onClick={() => setIsOpen(false)}>
-              contact form
-            </Link>.
-          </span>
-        ),
+        content: "That sounds like something our engineering team can help with! For the fastest response, I highly recommend scheduling a discovery call or submitting details via our contact form.",
+        isLink: true, // Flag to render links in UI
       };
       setMessages((prev) => [...prev, newAIMsg]);
     }, 1500);
   };
+
+  // Prevent hydration mismatch by returning nothing until mounted
+  if (!mounted) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end">
@@ -110,18 +121,19 @@ export default function AIAssistant() {
             {/* Chat Area */}
             <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gray-50 dark:bg-gray-900/50">
               {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                >
-                  <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm ${
-                      msg.role === "user"
-                        ? "bg-brand-600 text-white rounded-br-none"
-                        : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-100 dark:border-gray-700 rounded-bl-none shadow-sm"
-                    }`}
-                  >
+                <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${msg.role === "user" ? "bg-brand-600 text-white rounded-br-none" : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-100 dark:border-gray-700 rounded-bl-none shadow-sm"}`}>
                     {msg.content}
+                    {msg.isLink && (
+                      <div className="mt-3 flex flex-col gap-2">
+                        <a href={CAL_LINK} target="_blank" rel="noopener noreferrer" className="block text-center bg-brand-50 hover:bg-brand-100 dark:bg-brand-900/30 dark:hover:bg-brand-900/50 text-brand-700 dark:text-brand-300 font-semibold py-2 rounded-lg border border-brand-200 dark:border-brand-800 transition-colors">
+                          Book a Demo
+                        </a>
+                        <Link href="/contact" onClick={() => setIsOpen(false)} className="block text-center bg-gray-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold py-2 rounded-lg transition-colors">
+                          Contact Us
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -161,7 +173,6 @@ export default function AIAssistant() {
         )}
       </AnimatePresence>
 
-      {/* Floating Action Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-14 h-14 bg-brand-600 hover:bg-brand-700 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950 relative"

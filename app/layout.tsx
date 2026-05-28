@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import Script from "next/script";
 import AIAssistant from "@/components/AIAssistant";
+import CookieBanner from "@/components/CookieBanner";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const inter = Inter({
@@ -14,7 +15,7 @@ const inter = Inter({
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#030712" }, // Tailwind gray-950
+    { media: "(prefers-color-scheme: dark)", color: "#030712" }, 
   ],
   width: "device-width",
   initialScale: 1,
@@ -40,7 +41,7 @@ export const metadata: Metadata = {
       {
         rel: "mask-icon",
         url: "/safari-pinned-tab.svg",
-        color: "#2563eb", // Tailwind brand-600
+        color: "#2563eb",
       },
     ],
   },
@@ -299,8 +300,10 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} font-sans antialiased text-gray-900 bg-white dark:bg-gray-950 dark:text-gray-50 transition-colors duration-300`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <Toaster position="bottom-right" richColors />
           <AIAssistant />
           {children}
+          <CookieBanner />
         </ThemeProvider>
       </body>
     </html>
