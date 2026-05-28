@@ -21,7 +21,7 @@ export default function NotFound() {
             Page Not Found
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-10 leading-relaxed max-w-lg mx-auto">
-            The page you are looking for doesn't exist or has been moved. Let's get you back on track to modernizing your clinic.
+            The page you are looking for doesn't exist or has been moved. Let's get you back on track to modernizing your Clinic.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
             <Link 
