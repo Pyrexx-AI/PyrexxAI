@@ -1,0 +1,4 @@
+Delete these from your repo after extracting the zip:
+app\template.tsx
+app\api\calender\book\route.ts
+app\api\calender\slots\route.ts

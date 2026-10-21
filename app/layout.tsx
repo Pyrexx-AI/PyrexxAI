@@ -1,37 +1,46 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import AIAssistant from "@/components/AIAssistant";
-import CookieBanner from "@/components/CookieBanner";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { Toaster } from "sonner";
-import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import "./globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import CookieBanner from "@/components/CookieBanner";
+import AIAssistant from "@/components/AIAssistant";
+import RevealObserver from "@/components/ui/RevealObserver";
+import JsonLd from "@/components/ui/JsonLd";
+import { organizationSchema, softwareSchema, websiteSchema } from "@/lib/schema";
+import { SITE } from "@/lib/site";
 
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
   display: "swap",
-  preload: true,
+  variable: "--font-inter",
+  adjustFontFallback: true,
 });
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0B0F17" },
-  ],
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0f17" },
+  ],
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://pyrexxai.com"),
+  metadataBase: new URL(SITE.url),
   title: {
     default: "PyrexxAI | AI Voice Receptionists for MedSpas & Dental Clinics",
     template: "%s | PyrexxAI",
   },
   description:
     "PyrexxAI deploys custom-trained AI voice receptionists for MedSpas, dental clinics, and therapy practices. Capture every call 24/7, book appointments automatically, and eliminate missed revenue — HIPAA-compliant.",
+  applicationName: SITE.name,
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -41,10 +50,7 @@ export const metadata: Metadata = {
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   manifest: "/site.webmanifest",
-  appleWebApp: {
-    title: "PyrexxAI",
-    statusBarStyle: "default",
-  },
+  appleWebApp: { title: "PyrexxAI", statusBarStyle: "default" },
   keywords: [
     "AI receptionist for medspa",
     "AI voice agent dental clinic",
@@ -56,19 +62,20 @@ export const metadata: Metadata = {
     "Jane App AI integration",
     "Boulevard EMR AI voice agent",
   ],
-  authors: [{ name: "PyrexxAI" }],
-  creator: "PyrexxAI",
+  authors: [{ name: SITE.name }],
+  creator: SITE.name,
+  formatDetection: { telephone: false },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://pyrexxai.com",
-    siteName: "PyrexxAI",
+    url: SITE.url,
+    siteName: SITE.name,
     title: "PyrexxAI — AI Voice Receptionists That Never Miss a Patient Call",
     description:
       "Stop losing revenue to missed calls. PyrexxAI deploys fully custom AI receptionists for MedSpas, dental, and therapy clinics — HIPAA-compliant, live in 14 days.",
     images: [
       {
-        url: "https://pyrexxai.com/api/og?title=AI%20Voice%20Receptionist%20for%20Clinics",
+        url: "/api/og?title=AI%20Voice%20Receptionist%20for%20Clinics",
         width: 1200,
         height: 630,
         alt: "PyrexxAI — AI Voice Receptionists for Healthcare Clinics",
@@ -80,90 +87,39 @@ export const metadata: Metadata = {
     title: "PyrexxAI — AI Receptionists for MedSpas & Clinics",
     description:
       "Custom AI voice agents that answer every call, book appointments 24/7, and integrate with your EMR. HIPAA-compliant. Live in 14 days.",
-    images: ["https://pyrexxai.com/api/og?title=AI%20Voice%20Receptionist%20for%20Clinics"],
+    images: ["/api/og?title=AI%20Voice%20Receptionist%20for%20Clinics"],
     creator: "@pyrexxai",
   },
   robots: {
     index: true,
     follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
+    googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1 },
   },
-  alternates: {
-    canonical: "https://pyrexxai.com",
-  },
+  // NOTE: no site-wide canonical here. Each page sets its own via buildMetadata(),
+  // otherwise every page would inherit the home page canonical.
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const orgSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "PyrexxAI",
-    url: "https://pyrexxai.com",
-    logo: "https://pyrexxai.com/logo.png",
-    sameAs: [
-      "https://github.com/PyrexxAI",
-      "https://linkedin.com/company/pyrexxai",
-      "https://x.com/pyrexxai",
-      "https://instagram.com/pyrexxai",
-      "https://facebook.com/pyrexxai",
-      "https://youtube.com/@pyrexxai",
-    ],
-    contactPoint: {
-      "@type": "ContactPoint",
-      email: "hello@pyrexxai.com",
-      telephone: "+13023376310",
-      contactType: "sales",
-      availableLanguage: "English",
-      areaServed: "US",
-    },
-  };
-
-  const softwareSchema = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: "PyrexxAI Voice Receptionist Engine",
-    operatingSystem: "Cloud / Web",
-    applicationCategory: "HealthApplication",
-    sameAs: [
-      "https://www.wikidata.org/wiki/Q356350",
-      "https://www.wikidata.org/wiki/Q1140323",
-    ],
-    offers: {
-      "@type": "Offer",
-      price: "1500.00",
-      priceCurrency: "USD",
-    },
-  };
-
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased text-gray-900 bg-white dark:bg-[#0B0F17] dark:text-gray-50 transition-colors duration-300`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
-          />
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
-          />
-          <Toaster position="bottom-right" richColors />
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <body>
+        <noscript>
+          <style>{`[data-reveal]{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
+        <JsonLd data={[organizationSchema(), websiteSchema(), softwareSchema()]} />
+        <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
+          <a href="#main" className="skip-link">
+            Skip to main content
+          </a>
+          <Navbar />
+          <main id="main">{children}</main>
+          <Footer />
+          <RevealObserver />
           <AIAssistant />
-          {children}
-          <Analytics />
-          <SpeedInsights />
           <CookieBanner />
         </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

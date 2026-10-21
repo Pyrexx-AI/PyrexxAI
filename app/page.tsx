@@ -1,22 +1,23 @@
-import dynamic from "next/dynamic";
-import Navbar from "@/components/Navbar";
+import type { Metadata } from "next";
 import Hero from "@/components/Hero";
 import StatsBar from "@/components/StatsBar";
+import ROICalculator from "@/components/ROICalculator";
+import Offerings from "@/components/Offerings";
+import HowItWorks from "@/components/HowItWorks";
 import Results from "@/components/Results";
 import TrustHIPAA from "@/components/TrustHIPAA";
-import CTA from "@/components/CTA";
-import Footer from "@/components/Footer";
+import CustomPositioning from "@/components/CustomPositioning";
+import FAQ from "@/components/FAQ";
+import CtaBand from "@/components/ui/CtaBand";
+import { SITE } from "@/lib/site";
 
-const ROICalculator = dynamic(() => import("@/components/ROICalculator"), { ssr: true });
-const Offerings = dynamic(() => import("@/components/Offerings"), { ssr: true });
-const HowItWorks = dynamic(() => import("@/components/HowItWorks"), { ssr: true });
-const CustomPositioning = dynamic(() => import("@/components/CustomPositioning"), { ssr: true });
-const FAQ = dynamic(() => import("@/components/FAQ"), { ssr: true });
+export const metadata: Metadata = {
+  alternates: { canonical: SITE.url },
+};
 
-export default function PyrexxAILandingPage() {
+export default function HomePage() {
   return (
-    <main className="min-h-screen bg-white dark:bg-[#0B0F17] text-gray-900 dark:text-gray-50 selection:bg-brand-100 dark:selection:bg-brand-900/50 selection:text-brand-900 dark:selection:text-brand-100 transition-colors duration-300">
-      <Navbar />
+    <>
       <Hero />
       <StatsBar />
       <ROICalculator />
@@ -26,8 +27,7 @@ export default function PyrexxAILandingPage() {
       <TrustHIPAA />
       <CustomPositioning />
       <FAQ />
-      <CTA />
-      <Footer />
-    </main>
+      <CtaBand />
+    </>
   );
 }

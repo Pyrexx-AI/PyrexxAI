@@ -41,6 +41,14 @@
 - [HIPAA Compliance & Data Security](https://pyrexxai.com/hipaa-compliance)
 - [About the Company](https://pyrexxai.com/about)
 - [Contact PyrexxAI](https://pyrexxai.com/contact)
+- [Book a Discovery Call](https://pyrexxai.com/book-demo)
+- [Live Dashboard Demo](https://pyrexxai.com/dashboard)
+- [Careers](https://pyrexxai.com/careers)
+
+## EMR Integrations
+- [Jane App (MedSpas)](https://pyrexxai.com/integrations/jane-app-medspa)
+- [Boulevard (Aesthetic Clinics)](https://pyrexxai.com/integrations/boulevard-aesthetics)
+- [Mindbody (Dental & Wellness)](https://pyrexxai.com/integrations/mindbody-dental)
 
 ## Full Documentation
 - [Privacy Policy](https://pyrexxai.com/privacy-policy)

@@ -4,7 +4,7 @@
   "description": "Enterprise AI Voice Receptionists and EMR Integrations for Medical Clinics",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0B0F17",
+  "background_color": "#ffffff",
   "theme_color": "#2563EB",
   "icons": [
     {
@@ -19,5 +19,11 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+  "lang": "en-US",
+  "id": "/",
+  "categories": [
+    "business",
+    "health"
   ]
 }

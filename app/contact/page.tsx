@@ -1,88 +1,71 @@
+import { Calendar, Mail, Phone } from "lucide-react";
+import Link from "next/link";
 import type { Metadata } from "next";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
-import { Mail, MapPin, Phone, MessageSquare } from "lucide-react";
-import { CAL_LINK } from "@/lib/utils";
+import IconTile, { toneAt } from "@/components/ui/IconTile";
+import JsonLd from "@/components/ui/JsonLd";
+import PageHeader from "@/components/ui/PageHeader";
+import { Section } from "@/components/ui/Section";
+import { buildMetadata } from "@/lib/seo";
+import { BOOK_DEMO_HREF, SITE, absoluteUrl } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Contact Us | PyrexxAI Enterprise Solutions",
-  description: "Get in touch with PyrexxAI. Request an audit, ask about EMR integrations, or secure a custom AI voice receptionist for your clinic.",
-  alternates: {
-    canonical: "https://pyrexxai.com/contact",
-  },
-};
+export const metadata: Metadata = buildMetadata({
+  title: "Contact Us: Enterprise Voice AI Solutions",
+  ogTitle: "Contact Us | PyrexxAI Enterprise Solutions",
+  description:
+    "Get in touch with PyrexxAI. Request an audit, ask about EMR integrations, or secure a custom AI voice receptionist for your clinic.",
+  path: "/contact",
+});
+
+const CHANNELS = [
+  { icon: Mail, title: "Email Us", detail: SITE.email, href: `mailto:${SITE.email}` },
+  { icon: Phone, title: "Call Our AI Agent", detail: SITE.phone, href: SITE.phoneHref },
+  { icon: Calendar, title: "Live Discovery Demo", detail: "Schedule 15-Minute Session", href: BOOK_DEMO_HREF },
+];
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-[#0B0F17] text-gray-900 dark:text-gray-50 transition-colors duration-300">
-      <Navbar />
+    <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          name: "Contact PyrexxAI",
+          url: absoluteUrl("/contact"),
+          mainEntity: { "@id": `${SITE.url}/#organization` },
+        }}
+      />
+      <PageHeader
+        trail={[{ name: "Contact", path: "/contact" }]}
+        eyebrow="Contact"
+        title={<>Let&apos;s modernize your <span className="text-gradient">patient intake operations.</span></>}
+      >
+        Whether you need a custom EMR integration or a full-scale AI phone deployment, our engineering team is ready to assist.
+      </PageHeader>
 
-      <section className="pt-32 pb-24 px-6 max-w-7xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-6">
-            Let's modernize your <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-accent-600 dark:from-brand-400 dark:to-accent-400">
-              patient intake operations.
-            </span>
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
-            Whether you need a custom EMR integration or a full-scale AI phone deployment, our engineering team is ready to assist.
-          </p>
-        </div>
-
-        <div className="grid lg:grid-cols-3 gap-12 items-start">
-          <div className="lg:col-span-1 space-y-8">
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 shadow-sm">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Direct Channels</h3>
-              <ul className="space-y-6">
-                <li className="flex items-start">
-                  <Mail className="w-6 h-6 text-brand-600 dark:text-brand-400 mr-4 flex-shrink-0" />
+      <Section>
+        <div className="split">
+          <div className="stack">
+            <h2 style={{ fontSize: 20 }} data-reveal>Direct Channels</h2>
+            {CHANNELS.map((c, i) => {
+              const Wrapper = c.href.startsWith("/") ? Link : "a";
+              return (
+                <Wrapper key={c.title} href={c.href} className="card contact-channel" data-reveal>
+                  <IconTile icon={c.icon} tone={toneAt(i)} />
                   <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white">Email Us</h4>
-                    <a href="mailto:hello@pyrexxai.com" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
-                      hello@pyrexxai.com
-                    </a>
+                    <b>{c.title}</b>
+                    <span>{c.detail}</span>
                   </div>
-                </li>
-                <li className="flex items-start">
-                  <Phone className="w-6 h-6 text-brand-600 dark:text-brand-400 mr-4 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white">Call Our AI Agent</h4>
-                    <a href="tel:+13023376310" className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
-                      +1 (302) 337-6310
-                    </a>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <MessageSquare className="w-6 h-6 text-brand-600 dark:text-brand-400 mr-4 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white">Live Discovery Demo</h4>
-                    <a href={CAL_LINK} className="text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
-                      Schedule 15-Minute Session
-                    </a>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <MapPin className="w-6 h-6 text-brand-600 dark:text-brand-400 mr-4 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white">Headquarters</h4>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Serving Medical Clinics & MedSpas Nationwide (Delaware Incorporated)
-                    </p>
-                  </div>
-                </li>
-              </ul>
-            </div>
+                </Wrapper>
+              );
+            })}
+            <p className="lead" style={{ fontSize: 13 }}>Serving Medical Clinics &amp; MedSpas Nationwide (Delaware Incorporated)</p>
           </div>
-
-          <div className="lg:col-span-2">
+          <div className="card" data-reveal>
             <ContactForm />
           </div>
         </div>
-      </section>
-
-      <Footer />
-    </main>
+      </Section>
+    </>
   );
 }

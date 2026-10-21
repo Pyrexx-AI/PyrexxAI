@@ -1,141 +1,110 @@
-import { NextResponse } from "next/server";
+import { streamText } from "ai";
+import { CHAT_CONFIG, CHAT_FALLBACK_REPLY } from "@/lib/chat/config";
+import { SYSTEM_PROMPT } from "@/lib/chat/system-prompt";
+import { chatRequestSchema, toModelMessages } from "@/lib/chat/schema";
+import { anonymousId, clientKey, rateLimit } from "@/lib/chat/rate-limit";
 
+/**
+ * PyrexxAI assistant, served through the Vercel AI Gateway.
+ *
+ * - Plain model-id strings ("provider/model") route through the Gateway automatically.
+ *   Auth: AI_GATEWAY_API_KEY, or OIDC (automatic on Vercel deployments).
+ * - Model + provider fallbacks, spend tags and per-user attribution are set via
+ *   providerOptions.gateway.
+ * - The response is a plain-text token stream (compatible with the existing client).
+ */
 export const runtime = "edge";
+export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 
-const SYSTEM_PROMPT = `You are the PyrexxAI virtual assistant, an expert sales engineer for an enterprise AI voice receptionist agency. 
-Your goal is to answer questions about PyrexxAI concisely, professionally, and accurately, and guide the user to book a discovery call.
+const textHeaders = {
+  "Content-Type": "text/plain; charset=utf-8",
+  "Cache-Control": "no-store, no-transform",
+  "X-Content-Type-Options": "nosniff",
+};
 
-KEY FACTS ABOUT PYREXXAI:
-- We deploy custom-trained AI voice receptionists for MedSpas, Dental Clinics, and Therapy Practices in the US.
-- Features: 24/7 inbound call handling, lead intake, direct EMR/EHR booking, missed-call text-back.
-- Integration: We integrate natively with Jane App, Mindbody, eClinicalWorks, Boulevard, and other major EMRs.
-- Timeline: We go live in exactly 14 days from the kickoff call.
-- Compliance: 100% HIPAA compliant. We provide a signed Business Associate Agreement (BAA) to all clients.
-- Data Policy: Zero PHI is used to train public foundation AI models. Data is encrypted in transit (TLS 1.3) and at rest (AES-256).
-- Pricing: $1,500 one-time setup fee, and $1,000/month for platform management.
-- Concurrent Calls: The AI handles unlimited concurrent calls. Zero hold times.
+const json = (content: string, status: number, extra: Record<string, string> = {}) =>
+  new Response(JSON.stringify({ content }), {
+    status,
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store", ...extra },
+  });
 
-FORMATTING RULES:
-- Use markdown links for URLs:
-  - Book demo: [book a free demo](/book-demo)
-  - Contact form: [contact form](/contact)
-  - HIPAA compliance: [HIPAA compliance page](/hipaa-compliance)
-  - Solutions: [solutions page](/ai-receptionist)
-- Keep responses ultra-concise (under 3 sentences).`;
+/** Browsers always send Origin on cross-origin POSTs; reject anything not from this host. */
+function isSameOrigin(req: Request): boolean {
+  const origin = req.headers.get("origin");
+  if (!origin) return true; // non-browser clients (curl, health checks) – still rate limited
+  try {
+    return new URL(origin).host === req.headers.get("host");
+  } catch {
+    return false;
+  }
+}
 
 export async function POST(req: Request) {
+  if (!isSameOrigin(req)) return json("Forbidden.", 403);
+
+  const key = clientKey(req);
+  const limit = rateLimit(key, CHAT_CONFIG.rateLimit.windowMs, CHAT_CONFIG.rateLimit.max);
+  if (!limit.ok) {
+    return json(
+      "You're sending messages quickly. Please wait a moment, or [book a free demo](/book-demo) to talk with our team directly.",
+      429,
+      { "Retry-After": String(limit.retryAfter) }
+    );
+  }
+
+  const raw = await req.json().catch(() => null);
+  const parsed = chatRequestSchema.safeParse(raw);
+  if (!parsed.success) return json("Please send a short text message and try again.", 400);
+
+  const messages = toModelMessages(parsed.data.messages);
+  if (!messages.length) return json("Please send a short text message and try again.", 400);
+
+  const user = await anonymousId(key);
+
   try {
-    const apiKey = process.env.OPENROUTER_API_KEY;
-    const model = process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct";
-
-    if (!apiKey) {
-      return NextResponse.json(
-        { content: "Please [book a free demo](/book-demo) to speak directly with our engineering team!" },
-        { status: 200 }
-      );
-    }
-
-    const body = await req.json().catch(() => ({ messages: [] }));
-    const { messages = [] } = body;
-
-    const conversationHistory = messages
-      .filter((msg: any) => msg.id !== "1" && msg.content)
-      .map((msg: any) => ({
-        role: msg.role === "ai" ? "assistant" : "user",
-        content: String(msg.content).slice(0, 1000),
-      }));
-
-    const payloadMessages = [
-      { role: "system", content: SYSTEM_PROMPT },
-      ...conversationHistory,
-    ];
-
-    const openRouterRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://pyrexxai.com",
-        "X-Title": "PyrexxAI Assistant",
+    const result = streamText({
+      model: CHAT_CONFIG.model,
+      system: SYSTEM_PROMPT,
+      messages,
+      maxOutputTokens: CHAT_CONFIG.maxOutputTokens,
+      maxRetries: 1,
+      abortSignal: AbortSignal.timeout(CHAT_CONFIG.requestTimeoutMs),
+      providerOptions: {
+        gateway: {
+          models: [...CHAT_CONFIG.fallbackModels],
+          user,
+          tags: [...CHAT_CONFIG.gatewayTags],
+        },
+        ...(CHAT_CONFIG.anthropicThinking ? { anthropic: { thinking: { type: "disabled" } } } : {}),
       },
-      body: JSON.stringify({
-        model: model,
-        messages: payloadMessages,
-        temperature: 0.5,
-        max_tokens: 400,
-        stream: true,
-      }),
+      onError: ({ error }) => console.error("[chat] gateway stream error:", error),
     });
 
-    if (!openRouterRes.ok) {
-      return NextResponse.json(
-        { content: "We are experiencing high traffic. Please [book a free demo](/book-demo) directly or visit our [contact form](/contact)!" },
-        { status: 200 }
-      );
-    }
-
     const encoder = new TextEncoder();
-    const decoder = new TextDecoder();
-
-    const stream = new ReadableStream({
+    const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
-        const reader = openRouterRes.body?.getReader();
-        if (!reader) {
-          controller.close();
-          return;
-        }
-
-        let buffer = "";
-
+        let sent = false;
         try {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split("\n");
-            buffer = lines.pop() || "";
-
-            for (const line of lines) {
-              const trimmed = line.trim();
-              if (!trimmed || trimmed.startsWith(":")) continue;
-              if (trimmed === "data: [DONE]") {
-                controller.close();
-                return;
-              }
-
-              if (trimmed.startsWith("data: ")) {
-                try {
-                  const parsed = JSON.parse(trimmed.slice(6));
-                  const content = parsed.choices?.[0]?.delta?.content;
-                  if (content) {
-                    controller.enqueue(encoder.encode(content));
-                  }
-                } catch {
-                  // Ignore JSON boundary splits
-                }
-              }
-            }
+          for await (const delta of result.textStream) {
+            sent = true;
+            controller.enqueue(encoder.encode(delta));
           }
-        } catch {
-          controller.enqueue(encoder.encode(" Please [book a free demo](/book-demo) to continue!"));
+          if (!sent) controller.enqueue(encoder.encode(CHAT_FALLBACK_REPLY));
+        } catch (error) {
+          console.error("[chat] stream interrupted:", error);
+          controller.enqueue(
+            encoder.encode(sent ? "\n\nPlease [book a free demo](/book-demo) to continue!" : CHAT_FALLBACK_REPLY)
+          );
         } finally {
           controller.close();
         }
       },
     });
 
-    return new Response(stream, {
-      headers: {
-        "Content-Type": "text/plain; charset=utf-8",
-        "Cache-Control": "no-cache, no-transform",
-      },
-    });
+    return new Response(stream, { headers: textHeaders });
   } catch (error) {
-    console.error("OpenRouter Route Error:", error);
-    return NextResponse.json(
-      { content: "I'm having trouble connecting right now. Please [book a free demo](/book-demo) directly!" },
-      { status: 200 }
-    );
+    console.error("[chat] route error:", error);
+    return new Response(CHAT_FALLBACK_REPLY, { headers: textHeaders });
   }
 }

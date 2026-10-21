@@ -1,23 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import {
-  Activity,
-  Phone,
-  ShieldCheck,
-  CheckCircle2,
-  Search,
-  BarChart3,
-  Flame,
-  X,
-} from "lucide-react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { CAL_LINK } from "@/lib/utils";
+import { Activity, BarChart3, CheckCircle2, Flame, Phone, Search, ShieldCheck, X } from "lucide-react";
+import { BOOK_DEMO_HREF } from "@/lib/site";
 
 type ActiveTab = "overview" | "calls" | "intents" | "transcripts" | "health";
-
 type CallLog = {
   id: string;
   caller: string;
@@ -29,361 +17,249 @@ type CallLog = {
   transcript: { role: "ai" | "user"; text: string }[];
 };
 
+const CALLS: CallLog[] = [
+  {
+    id: "C-9048", caller: "+1 (302) ***-1284", time: "10 mins ago", duration: "02:14", intent: "Book Appointment", sentiment: "Positive", outcome: "EMR Synced",
+    transcript: [
+      { role: "ai", text: "Hello! Thank you for calling Luxe Aesthetics. How can I help you today?" },
+      { role: "user", text: "Hi, I'd like to book a dermal filler appointment with Dr. Jenkins next Wednesday." },
+      { role: "ai", text: "I can absolutely help with that. Looking at our calendar for next Wednesday, June 10th, I have openings at 10:00 AM and 2:30 PM. Do either of those work?" },
+      { role: "user", text: "2:30 PM works perfectly for me." },
+      { role: "ai", text: "Perfect, I've reserved that slot for you and sent a confirmation text. We look forward to seeing you!" },
+    ],
+  },
+  {
+    id: "C-9047", caller: "+1 (415) ***-9821", time: "45 mins ago", duration: "01:05", intent: "Reschedule Booking", sentiment: "Neutral", outcome: "EMR Synced",
+    transcript: [
+      { role: "ai", text: "Hi there! Welcome to Luxe Aesthetics. What can I adjust for you?" },
+      { role: "user", text: "Hey, I need to push my appointment today back by an hour if possible." },
+      { role: "ai", text: "Let me check Dr. Jenkins' schedule. Yes, we can move you from 3:00 PM to 4:00 PM today. I've updated this in our system." },
+      { role: "user", text: "Awesome, thank you so much." },
+    ],
+  },
+  {
+    id: "C-9046", caller: "+1 (646) ***-4432", time: "2 hours ago", duration: "03:45", intent: "HIPAA Queries", sentiment: "Neutral", outcome: "Info Provided",
+    transcript: [
+      { role: "ai", text: "Hello, Luxe Aesthetics. How may I assist you?" },
+      { role: "user", text: "Hi, I'm calling to verify how my medical records are protected when booking online." },
+      { role: "ai", text: "Our systems utilize fully HIPAA-compliant architecture. All personal data is fully encrypted at rest using AES-256 and never shared with unauthorized parties." },
+      { role: "user", text: "Okay, that's exactly what I needed to hear. Thank you." },
+    ],
+  },
+];
+
+const INTENTS = [
+  { name: "Schedule Appointment", count: 484, success: 98.4 },
+  { name: "Reschedule / Move Booking", count: 212, success: 94.2 },
+  { name: "HIPAA & Compliance Inquiries", count: 184, success: 100 },
+  { name: "Treatment & Pricing FAQs", count: 110, success: 88.5 },
+];
+
+const TABS: { id: ActiveTab; label: string; icon: typeof Phone }[] = [
+  { id: "overview", label: "Overview Metrics", icon: BarChart3 },
+  { id: "calls", label: "Call Logger Feed", icon: Phone },
+  { id: "intents", label: "Intent Map Analytics", icon: Activity },
+  { id: "transcripts", label: "Live Transcripts", icon: Search },
+  { id: "health", label: "EMR Pipeline Health", icon: ShieldCheck },
+];
+
+const sentimentTag = (s: CallLog["sentiment"]) => (s === "Positive" ? "tag--ok" : s === "Negative" ? "tag--warn" : "");
+
 export default function DashboardClient() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("overview");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [, setActiveCallers] = useState(2);
-  const [selectedCall, setSelectedCall] = useState<CallLog | null>(null);
+  const [tab, setTab] = useState<ActiveTab>("overview");
+  const [term, setTerm] = useState("");
+  const [selected, setSelected] = useState<CallLog | null>(null);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveCallers((prev) => (Math.random() > 0.5 ? Math.max(1, prev - 1) : Math.min(4, prev + 1)));
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const mockCalls: CallLog[] = [
-    {
-      id: "C-9048",
-      caller: "+1 (302) ***-1284",
-      time: "10 mins ago",
-      duration: "02:14",
-      intent: "Book Appointment",
-      sentiment: "Positive",
-      outcome: "EMR Synced",
-      transcript: [
-        { role: "ai", text: "Hello! Thank you for calling Luxe Aesthetics. How can I help you today?" },
-        { role: "user", text: "Hi, I'd like to book a dermal filler appointment with Dr. Jenkins next Wednesday." },
-        { role: "ai", text: "I can absolutely help with that. Looking at our calendar for next Wednesday, June 10th, I have openings at 10:00 AM and 2:30 PM. Do either of those work?" },
-        { role: "user", text: "2:30 PM works perfectly for me." },
-        { role: "ai", text: "Perfect, I've reserved that slot for you and sent a confirmation text. We look forward to seeing you!" },
-      ],
-    },
-    {
-      id: "C-9047",
-      caller: "+1 (415) ***-9821",
-      time: "45 mins ago",
-      duration: "01:05",
-      intent: "Reschedule Booking",
-      sentiment: "Neutral",
-      outcome: "EMR Synced",
-      transcript: [
-        { role: "ai", text: "Hi there! Welcome to Luxe Aesthetics. What can I adjust for you?" },
-        { role: "user", text: "Hey, I need to push my appointment today back by an hour if possible." },
-        { role: "ai", text: "Let me check Dr. Jenkins' schedule. Yes, we can move you from 3:00 PM to 4:00 PM today. I've updated this in our system." },
-        { role: "user", text: "Awesome, thank you so much." },
-      ],
-    },
-    {
-      id: "C-9046",
-      caller: "+1 (646) ***-4432",
-      time: "2 hours ago",
-      duration: "03:45",
-      intent: "HIPAA Queries",
-      sentiment: "Neutral",
-      outcome: "Info Provided",
-      transcript: [
-        { role: "ai", text: "Hello, Luxe Aesthetics. How may I assist you?" },
-        { role: "user", text: "Hi, I'm calling to verify how my medical records are protected when booking online." },
-        { role: "ai", text: "Our systems utilize fully HIPAA-compliant architecture. All personal data is fully encrypted at rest using AES-256 and never shared with unauthorized parties." },
-        { role: "user", text: "Okay, that's exactly what I needed to hear. Thank you." },
-      ],
-    },
-  ];
-
-  const filteredCalls = mockCalls.filter(
-    (call) =>
-      call.caller.includes(searchTerm) || call.intent.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    const q = term.trim().toLowerCase();
+    return CALLS.filter((c) => c.caller.includes(term.trim()) || c.intent.toLowerCase().includes(q));
+  }, [term]);
 
   return (
-    <main className="min-h-screen bg-white dark:bg-[#0B0F17] text-gray-900 dark:text-gray-100 transition-colors duration-300">
-      <Navbar />
+    <>
+      <div className="demo-banner" style={{ marginBottom: 14 }}>
+        <p style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <Flame className="icon" style={{ color: "var(--violet)" }} aria-hidden="true" />
+          <span>
+            <b>Explore PyrexxAI Command Center (Live Demonstration)</b>
+            <span>This is a fully featured model of your future client dashboard. Book a consultation to activate this system for your practice.</span>
+          </span>
+        </p>
+        <Link href={BOOK_DEMO_HREF} className="btn btn--primary">Request Setup &rarr;</Link>
+      </div>
 
-      <section className="pt-32 pb-24 max-w-7xl mx-auto px-6">
-        <div className="bg-brand-600/10 border border-brand-500/30 rounded-3xl p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Flame className="w-6 h-6 text-brand-500 shrink-0 animate-pulse" />
-            <div>
-              <p className="font-bold text-gray-900 dark:text-white">Explore PyrexxAI Command Center (Live Demonstration)</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                This is a fully featured model of your future client dashboard. Book a consultation to activate this system for your practice.
-              </p>
-            </div>
+      <div className="dash">
+        <aside>
+          <div className="dash__nav" role="tablist" aria-label="Dashboard sections" aria-orientation="vertical">
+            <span className="tag tag--ok" style={{ margin: "6px 8px", flex: "none" }}>
+              <i className="live-dot" style={{ width: 8, height: 8 }} aria-hidden="true" /> Voice Agent Engine Live
+            </span>
+            {TABS.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                role="tab"
+                id={`tab-${id}`}
+                aria-selected={tab === id}
+                aria-controls="dash-panel"
+                onClick={() => {
+                  setTab(id);
+                  setSelected(null);
+                }}
+              >
+                <Icon className="icon" aria-hidden="true" />
+                {label}
+              </button>
+            ))}
           </div>
-          <Link
-            href={CAL_LINK}
-            className="bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-full font-bold text-xs shrink-0 shadow-cta transition-colors"
-          >
-            Request Setup &rarr;
-          </Link>
-        </div>
+          <p className="lead" style={{ fontSize: 12, marginTop: 10 }}>Client Demo Node: PX-78241</p>
+        </aside>
 
-        <div className="grid lg:grid-cols-4 gap-8">
-          <div className="lg:col-span-1 bg-gray-50 dark:bg-[#131518] rounded-3xl p-6 border border-gray-200 dark:border-gray-800 flex flex-col justify-between">
-            <div className="space-y-6">
-              <div className="flex items-center space-x-3 border-b border-gray-200 dark:border-gray-800 pb-4">
-                <div className="w-3.5 h-3.5 bg-emerald-500 rounded-full animate-ping" />
-                <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-                  Voice Agent Engine Live
-                </span>
+        <div className="dash__main" id="dash-panel" role="tabpanel" aria-labelledby={`tab-${tab}`}>
+          <div className="kpis">
+            {[
+              ["Total Calls", "3,842", "+14.2% vs last mo"],
+              ["AI Bookings", "1,124", "Jane App synced"],
+              ["Avg Duration", "01:54", "-12s latency delta"],
+              ["Escalation Rate", "5.8%", "Under standard threshold"],
+            ].map(([k, v, d]) => (
+              <div key={k} className="card kpi">
+                <small>{k}</small>
+                <b className="text-gradient">{v}</b>
+                <span>{d}</span>
               </div>
-
-              <ul className="space-y-2">
-                {[
-                  { id: "overview", label: "Overview Metrics", icon: BarChart3 },
-                  { id: "calls", label: "Call Logger Feed", icon: Phone },
-                  { id: "intents", label: "Intent Map Analytics", icon: Activity },
-                  { id: "transcripts", label: "Live Transcripts", icon: Search },
-                  { id: "health", label: "EMR Pipeline Health", icon: ShieldCheck },
-                ].map((tab) => {
-                  const Icon = tab.icon;
-                  return (
-                    <li key={tab.id}>
-                      <button
-                        onClick={() => {
-                          setActiveTab(tab.id as ActiveTab);
-                          setSelectedCall(null);
-                        }}
-                        className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
-                          activeTab === tab.id
-                            ? "bg-brand-600 text-white shadow-cta"
-                            : "text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
-                        }`}
-                      >
-                        <Icon className="w-4 h-4" />
-                        <span>{tab.label}</span>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-
-            <div className="pt-6 border-t border-gray-200 dark:border-gray-800 mt-6 text-center">
-              <span className="text-xs text-gray-500">Client Demo Node: PX-78241</span>
-            </div>
+            ))}
           </div>
 
-          <div className="lg:col-span-3 space-y-8">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-gray-50 dark:bg-[#131518] border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Total Calls</p>
-                <p className="text-3xl font-bold mt-1 text-gray-900 dark:text-white stat-number">3,842</p>
-                <span className="text-xs text-emerald-500 font-semibold">+14.2% vs last mo</span>
+          {tab === "overview" && (
+            <div className="card">
+              <div className="panel-head">
+                <h3>Clinic Performance Overview</h3>
+                <span className="tag tag--muted">Metrics sync: Just now</span>
               </div>
-              <div className="bg-gray-50 dark:bg-[#131518] border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">AI Bookings</p>
-                <p className="text-3xl font-bold mt-1 text-gray-900 dark:text-white stat-number">1,124</p>
-                <span className="text-xs text-emerald-500 font-semibold">Jane App synced</span>
-              </div>
-              <div className="bg-gray-50 dark:bg-[#131518] border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Avg Duration</p>
-                <p className="text-3xl font-bold mt-1 text-gray-900 dark:text-white stat-number">01:54</p>
-                <span className="text-xs text-emerald-500 font-semibold">-12s latency delta</span>
-              </div>
-              <div className="bg-gray-50 dark:bg-[#131518] border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Escalation Rate</p>
-                <p className="text-3xl font-bold mt-1 text-gray-900 dark:text-white stat-number">5.8%</p>
-                <span className="text-xs text-gray-500">Under standard threshold</span>
+              <div className="grid grid--2">
+                <div>
+                  <h4 style={{ fontSize: 14, fontWeight: 600 }}>ROI Conversion Matrix</h4>
+                  <p style={{ fontSize: 13, color: "var(--muted)", margin: "6px 0 12px" }}>
+                    Comparing estimated monthly revenue at risk against active bookings resolved by the AI voice reception channel.
+                  </p>
+                  <div className="row-line"><span>Diverted Inbound Value</span><b className="text-gradient" style={{ fontSize: 20 }}>$142,800</b></div>
+                </div>
+                <div>
+                  <h4 style={{ fontSize: 14, fontWeight: 600 }}>EMR Database Health</h4>
+                  <div className="row-line"><span>API Webhook Latency</span><b>12ms</b></div>
+                  <div className="row-line"><span>Sync Success Rate</span><b>100%</b></div>
+                </div>
               </div>
             </div>
+          )}
 
-            <div className="bg-gray-50 dark:bg-[#131518] border border-gray-200 dark:border-gray-800 rounded-3xl p-6 lg:p-8 min-h-[400px]">
-              {activeTab === "overview" && (
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-800 pb-4">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Clinic Performance Overview</h3>
-                    <span className="text-xs text-brand-500 font-bold uppercase tracking-wider">Metrics sync: Just now</span>
+          {tab === "calls" && (
+            <div className="card">
+              <div className="panel-head">
+                <h3>Inbound Call Logs</h3>
+                <label className="search-box">
+                  <Search className="icon" aria-hidden="true" />
+                  <input type="search" value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Search caller or intent..." aria-label="Search caller or intent" />
+                </label>
+              </div>
+              <div className="table-card table-scroll" style={{ boxShadow: "none" }}>
+                <table style={{ minWidth: 720 }}>
+                  <thead>
+                    <tr>
+                      {["Caller ID", "Time", "Duration", "Intent", "Sentiment", "Outcome", "Action"].map((h) => (
+                        <th key={h} scope="col">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((c) => (
+                      <tr key={c.id}>
+                        <td>{c.caller}</td>
+                        <td>{c.time}</td>
+                        <td>{c.duration}</td>
+                        <td><span className="tag">{c.intent}</span></td>
+                        <td><span className={`tag ${sentimentTag(c.sentiment)}`}>{c.sentiment}</span></td>
+                        <td><span className="tag tag--ok">{c.outcome}</span></td>
+                        <td><button className="link-btn" onClick={() => setSelected(c)}>View Transcript</button></td>
+                      </tr>
+                    ))}
+                    {!filtered.length && (
+                      <tr><td colSpan={7} style={{ textAlign: "center", color: "var(--muted)" }}>No calls match your search.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              {selected && (
+                <div className="card" style={{ marginTop: 14, background: "var(--bg-alt)" }}>
+                  <div className="panel-head">
+                    <h4 style={{ fontSize: 14, fontWeight: 600 }}>Call Transcript Details ({selected.id})</h4>
+                    <button className="icon-btn" onClick={() => setSelected(null)} aria-label="Close transcript"><X className="icon" aria-hidden="true" /></button>
                   </div>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="bg-white dark:bg-[#0A0B0D] border border-gray-200 dark:border-gray-800 p-6 rounded-2xl space-y-4">
-                      <h4 className="text-sm font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider">ROI Conversion Matrix</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Comparing estimated monthly revenue at risk against active bookings resolved by the AI voice reception channel.
-                      </p>
-                      <div className="flex justify-between items-center bg-brand-600/5 border border-brand-900/50 p-4 rounded-xl">
-                        <span className="text-xs text-gray-500">Diverted Inbound Value</span>
-                        <span className="text-xl font-bold text-emerald-500">$142,800</span>
-                      </div>
-                    </div>
-                    <div className="bg-white dark:bg-[#0A0B0D] border border-gray-200 dark:border-gray-800 p-6 rounded-2xl flex flex-col justify-between">
-                      <h4 className="text-sm font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider">EMR Database Health</h4>
-                      <div className="space-y-2 mt-4">
-                        <div className="flex justify-between text-xs">
-                          <span>API Webhook Latency</span>
-                          <span className="font-semibold text-emerald-500">12ms</span>
-                        </div>
-                        <div className="flex justify-between text-xs">
-                          <span>Sync Success Rate</span>
-                          <span className="font-semibold text-brand-500">100%</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === "calls" && (
-                <div className="space-y-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-4">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Inbound Call Logs</h3>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                      <input
-                        type="text"
-                        placeholder="Search caller or intent..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="bg-white dark:bg-[#0A0B0D] border border-gray-200 dark:border-gray-800 rounded-xl pl-9 pr-4 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-brand-500"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="border-b border-gray-200 dark:border-gray-800 text-xs text-gray-500 uppercase tracking-wider">
-                          <th className="py-3 px-4">Caller ID</th>
-                          <th className="py-3 px-4">Time</th>
-                          <th className="py-3 px-4">Duration</th>
-                          <th className="py-3 px-4">Intent</th>
-                          <th className="py-3 px-4">Sentiment</th>
-                          <th className="py-3 px-4">Outcome</th>
-                          <th className="py-3 px-4 text-right">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200 dark:divide-gray-800/50">
-                        {filteredCalls.map((call) => (
-                          <tr key={call.id} className="text-sm hover:bg-gray-100 dark:hover:bg-gray-900/30">
-                            <td className="py-4 px-4 font-semibold text-gray-900 dark:text-white">{call.caller}</td>
-                            <td className="py-4 px-4 text-gray-500 dark:text-gray-400">{call.time}</td>
-                            <td className="py-4 px-4 text-gray-500 dark:text-gray-400 tabular-nums">{call.duration}</td>
-                            <td className="py-4 px-4">
-                              <span className="bg-brand-600/10 text-brand-600 dark:text-brand-400 px-2.5 py-1 rounded-full text-xs font-semibold">
-                                {call.intent}
-                              </span>
-                            </td>
-                            <td className="py-4 px-4">
-                              <span className={`text-xs font-bold ${call.sentiment === "Positive" ? "text-emerald-500" : "text-amber-500"}`}>
-                                {call.sentiment}
-                              </span>
-                            </td>
-                            <td className="py-4 px-4">
-                              <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-1 rounded-md text-xs font-bold">
-                                {call.outcome}
-                              </span>
-                            </td>
-                            <td className="py-4 px-4 text-right">
-                              <button
-                                onClick={() => setSelectedCall(call)}
-                                className="text-xs bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded-full font-bold"
-                              >
-                                View Transcript
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {selectedCall && (
-                    <div className="bg-white dark:bg-[#0A0B0D] border border-gray-200 dark:border-gray-800 rounded-2xl p-6 mt-6">
-                      <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-bold text-gray-900 dark:text-white">Call Transcript Details ({selectedCall.id})</h4>
-                        <button onClick={() => setSelectedCall(null)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white">
-                          <X className="w-5 h-5" />
-                        </button>
-                      </div>
-                      <div className="space-y-4 max-h-[300px] overflow-y-auto p-4 bg-gray-50 dark:bg-[#131518] rounded-xl border border-gray-200 dark:border-gray-800">
-                        {selectedCall.transcript.map((msg, i) => (
-                          <div key={i} className={`flex flex-col ${msg.role === "ai" ? "items-start" : "items-end"}`}>
-                            <span className="text-[10px] text-gray-500 font-bold mb-1 uppercase">
-                              {msg.role === "ai" ? "PyrexxAI" : "Patient"}
-                            </span>
-                            <div className={`p-3 rounded-xl text-xs max-w-[80%] ${msg.role === "ai" ? "bg-brand-600/10 text-brand-700 dark:text-brand-300 rounded-tl-none" : "bg-brand-600 text-white rounded-tr-none"}`}>
-                              {msg.text}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === "intents" && (
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-800 pb-4">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Clinical Intent Resolution</h3>
-                  </div>
-                  <div className="space-y-4">
-                    {[
-                      { name: "Schedule Appointment", count: 484, success: 98.4 },
-                      { name: "Reschedule / Move Booking", count: 212, success: 94.2 },
-                      { name: "HIPAA & Compliance Inquiries", count: 184, success: 100 },
-                      { name: "Treatment & Pricing FAQs", count: 110, success: 88.5 },
-                    ].map((intent, i) => (
-                      <div key={i} className="bg-white dark:bg-[#0A0B0D] p-5 border border-gray-200 dark:border-gray-800 rounded-2xl flex justify-between items-center">
-                        <div>
-                          <p className="font-bold text-gray-900 dark:text-white text-base">{intent.name}</p>
-                          <p className="text-xs text-gray-500 mt-1">Processed: {intent.count} cases</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xs text-gray-500 uppercase font-semibold">AI Success Rate</p>
-                          <p className="text-lg font-bold text-brand-600 dark:text-brand-400 mt-1">{intent.success}%</p>
-                        </div>
+                  <div className="transcript">
+                    {selected.transcript.map((m, i) => (
+                      <div key={i} style={{ display: "grid", gap: 2 }}>
+                        <small style={{ fontWeight: 700, fontSize: 11, color: "var(--muted)", textAlign: m.role === "ai" ? "right" : "left" }}>
+                          {m.role === "ai" ? "PyrexxAI" : "Patient"}
+                        </small>
+                        <div className={`bubble ${m.role === "ai" ? "bubble--out" : "bubble--in"}`} style={{ maxWidth: "88%" }}>{m.text}</div>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
-
-              {activeTab === "transcripts" && (
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-800 pb-4">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Full-Text Transcript Archiver</h3>
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    Search and pull recorded audio and transcripts directly from your medical records database. Select a call from the{" "}
-                    <button onClick={() => setActiveTab("calls")} className="text-brand-600 dark:text-brand-400 font-bold hover:underline">
-                      Call Logger Feed
-                    </button>{" "}
-                    to audit individual patient experiences.
-                  </p>
-                </div>
-              )}
-
-              {activeTab === "health" && (
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-800 pb-4">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">EMR Sync Status</h3>
-                  </div>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="bg-white dark:bg-[#0A0B0D] border border-gray-200 dark:border-gray-800 p-6 rounded-2xl space-y-4">
-                      <div className="flex items-center space-x-3 text-emerald-500">
-                        <CheckCircle2 className="w-5 h-5" />
-                        <span className="font-bold">Active API Hook</span>
-                      </div>
-                      <p className="text-xs text-gray-500">Synced directly with clinic scheduler (Jane App / Boulevard / Mindbody)</p>
-                    </div>
-                    <div className="bg-white dark:bg-[#0A0B0D] border border-gray-200 dark:border-gray-800 p-6 rounded-2xl space-y-4">
-                      <div className="flex items-center space-x-3 text-emerald-500">
-                        <ShieldCheck className="w-5 h-5" />
-                        <span className="font-bold">Encryption Verified</span>
-                      </div>
-                      <p className="text-xs text-gray-500">End-to-end clinical compliance pipeline is operational.</p>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
-          </div>
-        </div>
-      </section>
+          )}
 
-      <Footer />
-    </main>
+          {tab === "intents" && (
+            <div className="card">
+              <div className="panel-head"><h3>Clinical Intent Resolution</h3></div>
+              {INTENTS.map((i) => (
+                <div key={i.name} style={{ marginBottom: 16 }}>
+                  <div className="row-line" style={{ border: 0, padding: 0 }}>
+                    <div>
+                      <b>{i.name}</b>
+                      <br />
+                      <span>Processed: {i.count} cases</span>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <span>AI Success Rate</span>
+                      <br />
+                      <b className="text-gradient">{i.success}%</b>
+                    </div>
+                  </div>
+                  <div className="progress" role="presentation"><i style={{ width: `${i.success}%` }} /></div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {tab === "transcripts" && (
+            <div className="card">
+              <div className="panel-head"><h3>Full-Text Transcript Archiver</h3></div>
+              <p style={{ fontSize: 14, color: "var(--muted)" }}>
+                Search and pull recorded audio and transcripts directly from your medical records database. Select a call from the{" "}
+                <button className="link-btn" onClick={() => setTab("calls")}>Call Logger Feed</button> to audit individual patient experiences.
+              </p>
+            </div>
+          )}
+
+          {tab === "health" && (
+            <div className="card">
+              <div className="panel-head"><h3>EMR Sync Status</h3></div>
+              <div className="grid grid--2">
+                <div className="card" style={{ background: "var(--bg-alt)" }}>
+                  <b style={{ display: "flex", gap: 8, alignItems: "center", color: "var(--green-ink)" }}><CheckCircle2 className="icon" aria-hidden="true" /> Active API Hook</b>
+                  <p style={{ marginTop: 6 }}>Synced directly with clinic scheduler (Jane App / Boulevard / Mindbody)</p>
+                </div>
+                <div className="card" style={{ background: "var(--bg-alt)" }}>
+                  <b style={{ display: "flex", gap: 8, alignItems: "center", color: "var(--green-ink)" }}><ShieldCheck className="icon" aria-hidden="true" /> Encryption Verified</b>
+                  <p style={{ marginTop: 6 }}>End-to-end clinical compliance pipeline is operational.</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   );
 }

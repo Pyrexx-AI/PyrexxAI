@@ -1,84 +1,57 @@
+import Link from "next/link";
+import { DollarSign, MessageSquare, Search } from "lucide-react";
 import type { Metadata } from "next";
-import Navbar from "@/components/Navbar";
-import CTA from "@/components/CTA";
-import Footer from "@/components/Footer";
-import { Database, HandCoins, MessageSquareText } from "lucide-react";
-import { CAL_LINK } from "@/lib/utils";
+import CtaBand from "@/components/ui/CtaBand";
+import IconTile, { toneAt } from "@/components/ui/IconTile";
+import JsonLd from "@/components/ui/JsonLd";
+import PageHeader from "@/components/ui/PageHeader";
+import { Section, SectionHead } from "@/components/ui/Section";
+import { buildMetadata } from "@/lib/seo";
+import { serviceSchema } from "@/lib/schema";
+import { BOOK_DEMO_HREF } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Database Reactivation for Clinics | PyrexxAI",
-  description: "Turn your dormant patient list into immediate appointments. Our AI-driven reactivation campaigns operate on a 100% risk-free, commission-only basis.",
-  alternates: {
-    canonical: "https://pyrexxai.com/database-reactivation",
-  },
-};
+const DESCRIPTION =
+  "Turn your dormant patient list into immediate appointments. Our AI-driven reactivation campaigns operate on a 100% risk-free, commission-only basis.";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Database Reactivation for Clinics",
+  description: DESCRIPTION,
+  path: "/database-reactivation",
+});
+
+const STEPS = [
+  { icon: Search, title: "We Mine Your EMR", desc: "We securely export a list of patients who haven't visited your clinic in 6+ months for routine check-ups, follow-ups, or top-off treatments." },
+  { icon: MessageSquare, title: "AI Initiates Contact", desc: "Our conversational AI initiates personalized SMS or voice outreach, provides clinical FAQs, and coordinates the appointment booking directly." },
+  { icon: DollarSign, title: "You Pay for Shows", desc: "No upfront retainer or ad spend required. We receive a pre-agreed commission only on the patients who successfully complete their appointment." },
+];
 
 export default function DatabaseReactivationPage() {
   return (
-    <main className="min-h-screen bg-white dark:bg-[#0B0F17] text-gray-900 dark:text-gray-50 selection:bg-brand-100 dark:selection:bg-brand-900/50 transition-colors duration-300">
-      <Navbar />
+    <>
+      <JsonLd data={serviceSchema({ name: "Patient Database Reactivation", description: DESCRIPTION, path: "/database-reactivation" })} />
+      <PageHeader
+        trail={[{ name: "Database Reactivation", path: "/database-reactivation" }]}
+        eyebrow="100% Risk-Free Commission Basis"
+        title={<>Unlock Hidden Revenue from Your <span className="text-gradient">Dormant Patient List.</span></>}
+        actions={<Link href={BOOK_DEMO_HREF} className="btn btn--primary">Start Your Free Campaign &rarr;</Link>}
+      >
+        You already spent money acquiring them. Let our intelligent AI systems seamlessly reach out to past patients to fill your calendar, and you only pay us when they actually show up.
+      </PageHeader>
 
-      <section className="pt-32 pb-20 lg:pt-48 lg:pb-24 px-6 max-w-5xl mx-auto text-center">
-        <div className="inline-flex items-center space-x-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800/50 px-4 py-2 rounded-full text-emerald-700 dark:text-emerald-400 text-sm font-bold mb-8 uppercase tracking-wider">
-          <span>100% Risk-Free Commission Basis</span>
-        </div>
+      <Section aria-labelledby="steps-title">
+        <SectionHead id="steps-title" eyebrow="How it works" title="Three steps. Zero upfront risk." />
+        <ol className="grid grid--3" style={{ listStyle: "none", padding: 0 }}>
+          {STEPS.map((s, i) => (
+            <li key={s.title} className="card" data-reveal>
+              <IconTile icon={s.icon} tone={toneAt(i)} />
+              <h3><span className="step-num text-gradient">0{i + 1}</span> {s.title}</h3>
+              <p>{s.desc}</p>
+            </li>
+          ))}
+        </ol>
+      </Section>
 
-        <h1 className="text-4xl lg:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-6 leading-[1.1]">
-          Unlock Hidden Revenue from Your <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-brand-600 dark:from-emerald-400 dark:to-brand-400">
-            Dormant Patient List.
-          </span>
-        </h1>
-        <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-3xl mx-auto leading-relaxed">
-          You already spent money acquiring them. Let our intelligent AI systems seamlessly reach out to past patients to fill your calendar—and you only pay us when they actually show up.
-        </p>
-
-        <a
-          href={CAL_LINK}
-          className="inline-flex bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 rounded-full text-base font-semibold transition-all shadow-cta hover:shadow-cta-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-        >
-          Start Your Free Campaign &rarr;
-        </a>
-      </section>
-
-      <section className="py-24 bg-gray-50 dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white dark:bg-gray-950 p-8 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm text-center flex flex-col items-center">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-900 rounded-2xl flex items-center justify-center mb-6">
-                <Database className="w-8 h-8 text-brand-600 dark:text-brand-400" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">1. We Mine Your EMR</h3>
-              <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                We securely export a list of patients who haven't visited your clinic in 6+ months for routine check-ups, follow-ups, or top-off treatments.
-              </p>
-            </div>
-
-            <div className="bg-white dark:bg-gray-950 p-8 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm text-center flex flex-col items-center">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-900 rounded-2xl flex items-center justify-center mb-6">
-                <MessageSquareText className="w-8 h-8 text-brand-600 dark:text-brand-400" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">2. AI Initiates Contact</h3>
-              <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                Our conversational AI initiates personalized SMS or voice outreach, provides clinical FAQs, and coordinates the appointment booking directly.
-              </p>
-            </div>
-
-            <div className="bg-white dark:bg-gray-950 p-8 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm text-center flex flex-col items-center">
-              <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 rounded-2xl flex items-center justify-center mb-6">
-                <HandCoins className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">3. You Pay for Shows</h3>
-              <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
-                No upfront retainer or ad spend required. We receive a pre-agreed commission only on the patients who successfully complete their appointment.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <CTA />
-      <Footer />
-    </main>
+      <CtaBand />
+    </>
   );
 }
