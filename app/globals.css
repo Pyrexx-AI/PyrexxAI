@@ -29,7 +29,7 @@
   --shadow-card-hover: 0 16px 36px -16px #7c3aed80;
   --shadow-pop: 0 10px 26px -12px #7c3aed66;
   --shadow-btn: 0 1px 2px #0000001f, 0 8px 18px -8px #7c3aedaa;
-  --header-h: calc(56px + env(safe-area-inset-top, 0px));
+  --header-h: calc(72px + env(safe-area-inset-top, 0px)); /* floating island bar: 16px offset + 64px height */
   color-scheme: light;
 }
 
@@ -55,7 +55,7 @@ html {
   -webkit-text-size-adjust: 100%;
   overflow-x: clip;
   scroll-behavior: smooth;
-  scroll-padding-top: 76px;
+  scroll-padding-top: 96px;
 }
 body {
   font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -175,51 +175,14 @@ button { cursor: pointer; touch-action: manipulation; }
 .callout p { max-width: 680px; font-size: 13.5px; color: var(--muted); }
 .callout .eyebrow { color: var(--violet); margin: 0; }
 
-/* ---------- Header / navigation ---------- */
-.site-header {
-  position: fixed; inset: 0 0 auto 0; z-index: 50; height: var(--header-h); padding-top: env(safe-area-inset-top, 0px);
-  background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--line);
-}
-.site-header__inner { display: flex; align-items: center; height: 56px; gap: 20px; position: relative; }
+/* ---------- Header: "dynamic island" bar (markup + utilities live in components/Navbar.tsx) ---------- */
 .brand { display: flex; align-items: center; gap: 9px; font-size: 18px; font-weight: 700; letter-spacing: -0.03em; }
 .brand__mark { position: relative; width: 28px; height: 28px; border-radius: 8px; overflow: hidden; background: var(--gradient); display: grid; place-items: center; color: #fff; }
-.nav-links { display: none; gap: 2px; margin-left: 12px; align-items: center; }
-.nav-link, .nav-trigger {
-  display: flex; align-items: center; gap: 4px; padding: 8px 12px; border-radius: 99px; font-size: 13.5px; font-weight: 500; color: var(--muted); transition: 0.2s;
-}
-.nav-link:hover, .nav-trigger:hover, .nav-link[aria-current="page"], .nav-trigger[data-active="true"] { color: var(--ink); background: var(--bg-alt); }
-.nav-item { position: relative; }
-.nav-trigger .icon { width: 14px; height: 14px; transition: transform 0.2s; }
-.nav-trigger[aria-expanded="true"] .icon { transform: rotate(180deg); }
-.nav-menu {
-  position: absolute; top: 100%; left: 0; min-width: 220px; padding: 6px; margin-top: 6px; border-radius: 14px; background: var(--card);
-  box-shadow: var(--shadow-pop), inset 0 0 0 1px var(--line); opacity: 0; visibility: hidden; translate: 0 -4px; transition: 0.18s;
-}
-.nav-menu[data-open="true"] { opacity: 1; visibility: visible; translate: 0; }
-.nav-menu a { display: block; padding: 9px 12px; border-radius: 9px; font-size: 13.5px; font-weight: 500; }
-.nav-menu a:hover, .nav-menu a[aria-current="page"] { background: var(--tint); }
-.nav-actions { display: flex; gap: 8px; align-items: center; margin-left: auto; }
-.nav-actions .btn { height: 36px; font-size: 13px; }
-.nav-actions .btn--ghost { display: none; }
 .icon-btn { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; box-shadow: inset 0 0 0 1px var(--line); background: transparent; }
 .icon-btn:hover { background: var(--tint); }
 .theme-toggle .sun { display: none; }
 [data-theme="dark"] .theme-toggle .sun { display: block; }
 [data-theme="dark"] .theme-toggle .moon { display: none; }
-.mobile-nav {
-  position: absolute; top: calc(100% + 1px); inset-inline: 0; display: none; flex-direction: column; padding: 8px 16px 16px;
-  background: var(--bg); border-bottom: 1px solid var(--line); max-height: calc(100dvh - var(--header-h)); overflow-y: auto;
-}
-.mobile-nav[data-open="true"] { display: flex; }
-.mobile-nav a { padding: 13px 8px; font-weight: 500; border-bottom: 1px solid var(--line); }
-.mobile-nav a:last-child { border: 0; }
-.mobile-nav .group-label { padding: 14px 8px 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
-@media (min-width: 900px) {
-  .nav-links { display: flex; }
-  .nav-actions .btn--ghost { display: inline-flex; }
-  .menu-toggle, .mobile-nav { display: none !important; }
-}
 main { min-height: 60vh; }
 
 /* ---------- Hero ---------- */
