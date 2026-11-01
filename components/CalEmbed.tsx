@@ -3,15 +3,52 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowLeft, ArrowRight, Building, Calendar as CalendarIcon, CheckCircle2, Clock, Layers, Loader2, Mail, Phone, ShieldCheck, User,
+  ArrowLeft, ArrowRight, Building, Calendar as CalendarIcon, CheckCircle2, Clock, 
+  Download, Layers, Loader2, Mail, Phone, ShieldCheck, User, Video
 } from "lucide-react";
 import { submitBookingAction } from "@/app/actions/booking";
 
 type Day = { dayName: string; dayNumber: number; fullDate: string };
 const FALLBACK_SLOTS = ["09:00", "10:30", "11:30", "13:00", "14:30", "15:30"];
 
-/** Local YYYY-MM-DD (toISOString() would shift the day for users west of UTC late in the evening). */
 const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+function generateClientIcs(clinicName: string, dateStr: string, slotStr: string) {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  const [hours, minutes] = slotStr.split(":").map(Number);
+  
+  // Format to UTC string for ICS standard
+  const start = new Date(Date.UTC(year, month - 1, day, hours + 4, minutes)); // Approximate ET to UTC
+  const end = new Date(start.getTime() + 15 * 60 * 1000);
+  
+  const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+
+  const icsData = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//PyrexxAI//Discovery Consultation//EN",
+    "METHOD:REQUEST",
+    "BEGIN:VEVENT",
+    `UID:px-${Date.now()}@pyrexxai.com`,
+    `DTSTAMP:${fmt(new Date())}`,
+    `DTSTART:${fmt(start)}`,
+    `DTEND:${fmt(end)}`,
+    `SUMMARY:PyrexxAI Voice AI Discovery — ${clinicName}`,
+    "DESCRIPTION:15-minute technical discovery session and EMR architecture evaluation with PyrexxAI engineering.",
+    "LOCATION:Google Meet (link in calendar invite)",
+    "STATUS:CONFIRMED",
+    "END:VEVENT",
+    "END:VCALENDAR"
+  ].join("\r\n");
+
+  const blob = new Blob([icsData], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `PyrexxAI-Consultation-${dateStr}.ics`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export default function CalEmbed() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -22,6 +59,7 @@ export default function CalEmbed() {
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [bookingRefId, setBookingRefId] = useState("");
   const [form, setForm] = useState({ name: "", email: "", clinic: "", phone: "", emr: "Jane App", callVolume: "100-500" });
 
   useEffect(() => {
@@ -64,10 +102,14 @@ export default function CalEmbed() {
     setSubmitting(true);
     try {
       const res = await submitBookingAction({ ...form, slotTime: `${selectedDate}T${selectedSlot}:00` });
-      if (res.success) setStep(3);
-      else setError(res.message || "Please try again.");
+      if (res.success) {
+        setBookingRefId(res.bookingId || `PX-${Date.now().toString().slice(-6)}`);
+        setStep(3);
+      } else {
+        setError(res.message || "Please check your details and try again.");
+      }
     } catch {
-      setError("Network error. Please try again.");
+      setError("Network error occurred while reserving your appointment. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -84,12 +126,12 @@ export default function CalEmbed() {
             <h3>
               {step === 1 && "Select Time Slot (15 min)"}
               {step === 2 && "Clinical Workflow Details"}
-              {step === 3 && "Booking Confirmed"}
+              {step === 3 && "Consultation Confirmed"}
             </h3>
             <p>
-              {step === 1 && "Live EMR demonstration & architecture map"}
+              {step === 1 && "Live EMR demonstration & architecture evaluation"}
               {step === 2 && "Step 2 of 2: Custom integration intake"}
-              {step === 3 && "Calendar invitation dispatched"}
+              {step === 3 && "Calendar invitation dispatched to your inbox"}
             </p>
           </div>
         </div>
@@ -143,7 +185,7 @@ export default function CalEmbed() {
         <form className="form" onSubmit={submit}>
           <label>
             <span className="field-label" style={{ margin: 0 }}><User className="icon" aria-hidden="true" /> Full Name *</span>
-            <input type="text" required value={form.name} onChange={set("name")} placeholder="Dr. Jenkins" autoComplete="name" />
+            <input type="text" required value={form.name} onChange={set("name")} placeholder="Dr. Sarah Jenkins" autoComplete="name" />
           </label>
           <label>
             <span className="field-label" style={{ margin: 0 }}><Mail className="icon" aria-hidden="true" /> Work Email *</span>
@@ -184,23 +226,52 @@ export default function CalEmbed() {
               <ArrowLeft className="icon" aria-hidden="true" /> Back
             </button>
             <button type="submit" className="btn btn--primary btn--lg" style={{ flex: 1 }} disabled={submitting}>
-              {submitting ? (<><Loader2 className="icon" style={{ animation: "spin 1s linear infinite" }} aria-hidden="true" /> Confirming Reservation...</>) : <>Confirm Discovery Call &rarr;</>}
+              {submitting ? (<><Loader2 className="icon" style={{ animation: "spin 1s linear infinite" }} aria-hidden="true" /> Confirming...</>) : <>Confirm Discovery Call &rarr;</>}
             </button>
           </div>
         </form>
       )}
 
       {step === 3 && (
-        <div className="success-state" role="status">
-          <div className="icon-tile icon-tile--green"><CheckCircle2 className="icon" aria-hidden="true" /></div>
-          <h3>Discovery Call Reserved</h3>
-          <p>Calendar invitation and Google Meet details dispatched.</p>
-          <div className="summary" style={{ marginTop: 18 }}>
-            <div><span>Date</span><b>{selectedDate}</b></div>
-            <div><span>Time (ET)</span><b>{selectedSlot}</b></div>
-            <div><span>Clinic</span><b>{form.clinic}</b></div>
+        <div className="success-state" role="status" style={{ textAlign: "left", padding: "12px 4px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
+            <div className="icon-tile icon-tile--green" style={{ width: 44, height: 44, borderRadius: "50%" }}>
+              <CheckCircle2 className="icon" style={{ width: 22, height: 22 }} aria-hidden="true" />
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>Discovery Session Confirmed</h3>
+              <p style={{ margin: 0, fontSize: 13, color: "var(--muted)" }}>Reference Code: <span style={{ fontFamily: "monospace", fontWeight: 700, color: "var(--brand-ink)" }}>{bookingRefId}</span></p>
+            </div>
           </div>
-          <Link href="/" className="btn btn--ghost" style={{ marginTop: 16 }}>Back to Home</Link>
+
+          <div className="summary" style={{ marginBottom: 16, borderLeft: "3px solid var(--green-ink)" }}>
+            <div><span>Scheduled Date</span><b>{selectedDate}</b></div>
+            <div><span>Time (Eastern Time)</span><b>{selectedSlot} ET</b></div>
+            <div><span>Clinic</span><b>{form.clinic}</b></div>
+            <div><span>EMR Architecture</span><b>{form.emr}</b></div>
+            <div><span>Meeting Format</span><b style={{ display: "flex", alignItems: "center", gap: 4 }}><Video className="icon" style={{ width: 14, height: 14 }} /> Google Meet</b></div>
+          </div>
+
+          <div style={{ background: "var(--tint)", padding: "14px 16px", borderRadius: 12, marginBottom: 18, fontSize: 13 }}>
+            <strong style={{ display: "block", color: "var(--brand-ink)", marginBottom: 4 }}>What Happens Next:</strong>
+            <p style={{ margin: 0, color: "var(--ink)", lineHeight: 1.5 }}>
+              A calendar invitation with conference credentials has been dispatched to <strong>{form.email}</strong>. Our Senior Voice Architect has begun profiling your clinic&apos;s procedure workflows.
+            </p>
+          </div>
+
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <button 
+              type="button" 
+              className="btn btn--primary" 
+              onClick={() => generateClientIcs(form.clinic, selectedDate, selectedSlot)}
+              style={{ flex: 1 }}
+            >
+              <Download className="icon" aria-hidden="true" /> Add to Calendar (.ics)
+            </button>
+            <Link href="/" className="btn btn--ghost">
+              Back to Home
+            </Link>
+          </div>
         </div>
       )}
     </div>

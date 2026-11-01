@@ -1,18 +1,10 @@
 import { streamText } from "ai";
 import { CHAT_CONFIG, CHAT_FALLBACK_REPLY } from "@/lib/chat/config";
-import { SYSTEM_PROMPT } from "@/lib/chat/system-prompt";
+import { buildDynamicSystemPrompt } from "@/lib/chat/system-prompt";
+import { getRelevantKnowledge } from "@/lib/chat/knowledge";
 import { chatRequestSchema, toModelMessages } from "@/lib/chat/schema";
 import { anonymousId, clientKey, rateLimit } from "@/lib/chat/rate-limit";
 
-/**
- * PyrexxAI assistant, served through the Vercel AI Gateway.
- *
- * - Plain model-id strings ("provider/model") route through the Gateway automatically.
- *   Auth: AI_GATEWAY_API_KEY, or OIDC (automatic on Vercel deployments).
- * - Model + provider fallbacks, spend tags and per-user attribution are set via
- *   providerOptions.gateway.
- * - The response is a plain-text token stream (compatible with the existing client).
- */
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -29,10 +21,9 @@ const json = (content: string, status: number, extra: Record<string, string> = {
     headers: { "Content-Type": "application/json", "Cache-Control": "no-store", ...extra },
   });
 
-/** Browsers always send Origin on cross-origin POSTs; reject anything not from this host. */
 function isSameOrigin(req: Request): boolean {
   const origin = req.headers.get("origin");
-  if (!origin) return true; // non-browser clients (curl, health checks) – still rate limited
+  if (!origin) return true;
   try {
     return new URL(origin).host === req.headers.get("host");
   } catch {
@@ -41,6 +32,7 @@ function isSameOrigin(req: Request): boolean {
 }
 
 export async function POST(req: Request) {
+  const startTime = Date.now();
   if (!isSameOrigin(req)) return json("Forbidden.", 403);
 
   const key = clientKey(req);
@@ -57,15 +49,31 @@ export async function POST(req: Request) {
   const parsed = chatRequestSchema.safeParse(raw);
   if (!parsed.success) return json("Please send a short text message and try again.", 400);
 
-  const messages = toModelMessages(parsed.data.messages);
+  // 1. Extract strictly typed user query from validated schema to satisfy TypeScript
+  const rawMessages = parsed.data.messages;
+  const lastRawMessage = rawMessages[rawMessages.length - 1];
+  const latestUserQuery: string = typeof lastRawMessage?.content === "string" 
+    ? lastRawMessage.content.trim() 
+    : "";
+
+  if (!latestUserQuery) return json("Please send a short text message and try again.", 400);
+
+  // 2. Prepare model message array for Vercel AI SDK
+  const messages = toModelMessages(rawMessages);
   if (!messages.length) return json("Please send a short text message and try again.", 400);
 
   const user = await anonymousId(key);
 
+  // 3. Dynamically retrieve grounded knowledge snippets
+  const dynamicKnowledge = await getRelevantKnowledge(latestUserQuery);
+  const systemPrompt = buildDynamicSystemPrompt(dynamicKnowledge);
+
+  console.info(`[AUDIT_TELEMETRY] [chat_query_received] User: ${user} | Query: "${latestUserQuery.slice(0, 80)}"`);
+
   try {
     const result = streamText({
       model: CHAT_CONFIG.model,
-      system: SYSTEM_PROMPT,
+      system: systemPrompt,
       messages,
       maxOutputTokens: CHAT_CONFIG.maxOutputTokens,
       maxRetries: 1,
@@ -91,6 +99,7 @@ export async function POST(req: Request) {
             controller.enqueue(encoder.encode(delta));
           }
           if (!sent) controller.enqueue(encoder.encode(CHAT_FALLBACK_REPLY));
+          console.info(`[AUDIT_TELEMETRY] [chat_stream_completed] Latency: ${Date.now() - startTime}ms`);
         } catch (error) {
           console.error("[chat] stream interrupted:", error);
           controller.enqueue(

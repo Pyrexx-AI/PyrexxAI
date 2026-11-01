@@ -2,6 +2,7 @@
 
 import { Resend } from "resend";
 import { persistBooking, persistLead } from "@/lib/supabase";
+import { syncLeadToSharedCrm } from "@/lib/crm-sync";
 
 export interface BookingPayload {
   name: string;
@@ -201,6 +202,18 @@ export async function submitBookingAction(payload: BookingPayload): Promise<{
       status: "confirmed",
       cal_booking_id: String(calBookingId),
     });
+		
+		await syncLeadToSharedCrm({
+			name: cleanName,
+			email: cleanEmail,
+			clinic: cleanClinic,
+			phone,
+			emr,
+			callVolume,
+			slotTime,
+			source: "booking_widget",
+			message: `Booked discovery session for ${slotTime}. Ref: ${calBookingId}`,
+		});
 
     // Tier 4: Direct prospect calendar confirmation email
     const resend = getResend();

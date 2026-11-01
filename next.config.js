@@ -1,12 +1,11 @@
 /** @type {import('next').NextConfig} */
 
-// Pragmatic enforced CSP with whitelisted Google Fonts stylesheets and binaries
 const isDev = process.env.NODE_ENV !== "production";
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval' " : ""}https://va.vercel-scripts.com`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "img-src 'self' data: blob:",
+  "img-src 'self' data: blob: https://pyrexxai.com",
   "font-src 'self' data: https://fonts.gstatic.com",
   "connect-src 'self' https://vitals.vercel-insights.com https://va.vercel-scripts.com https://fonts.googleapis.com https://fonts.gstatic.com",
   "manifest-src 'self'",
@@ -26,10 +25,16 @@ const nextConfig = {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     minimumCacheTTL: 60 * 60 * 24 * 30,
-    remotePatterns: [],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "pyrexxai.com",
+      },
+    ],
   },
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error", "warn"] } : false,
+    // Preserve error, warn, and info in production so Vercel logs capture audit telemetry
+    removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error", "warn", "info"] } : false,
   },
   experimental: {
     optimizePackageImports: ["lucide-react"],
@@ -48,7 +53,6 @@ const nextConfig = {
         destination: "https://pyrexxai.com/:path*",
         permanent: true,
       },
-      // Redirect misspelled calender endpoints to standard calendar routes
       {
         source: "/api/calender/:path*",
         destination: "/api/calendar/:path*",

@@ -5,6 +5,7 @@ import { Resend } from "resend";
 import { render } from "@react-email/render";
 import ContactTemplate from "@/components/emails/ContactTemplate";
 import { persistLead } from "@/lib/supabase";
+import { syncLeadToSharedCrm } from "@/lib/crm-sync";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -32,8 +33,7 @@ function generateProspectAutoresponderHtml(payload: FormSubmissionPayload): stri
       <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F9FAFB; padding: 24px; color: #111827; margin: 0;">
         <div style="max-width: 580px; margin: 0 auto; background: #FFFFFF; padding: 36px 32px; border-radius: 16px; border: 1px solid #E5E7EB; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
           <div style="display: flex; align-items: center; margin-bottom: 24px;">
-            <div style="background: #2563EB; color: #FFFFFF; font-weight: 800; border-radius: 8px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; margin-right: 10px;">PX</div>
-            <span style="font-weight: 700; font-size: 18px; color: #111827;">PyrexxAI</span>
+            <img src="https://pyrexxai.com/logo.png" alt="PyrexxAI" width="120" style="display: block; border: 0; outline: none;" />
           </div>
 
           <h2 style="font-size: 22px; color: #111827; margin: 0 0 12px 0;">We have received your clinical inquiry, ${escapeHtml(payload.name.split(" ")[0])}.</h2>
@@ -107,7 +107,7 @@ export async function submitContactForm(_prevState: unknown, formData: FormData)
   try {
     const honeypot = formData.get("website") as string;
     if (honeypot) {
-      console.log("[AUDIT_TELEMETRY] Honeypot triggered. Bot submission safely absorbed.");
+      console.info("[AUDIT_TELEMETRY] Honeypot triggered. Bot submission absorbed.");
       return { success: true, message: "Your inquiry has been securely submitted." };
     }
 
@@ -139,9 +139,9 @@ export async function submitContactForm(_prevState: unknown, formData: FormData)
       callSoftwareName,
     };
 
-    console.log(`[AUDIT_TELEMETRY] [contact_inbound_initiated] Prospect: ${name} (${email}) | Clinic: ${clinic}`);
+    console.info(`[AUDIT_TELEMETRY] [contact_inbound_initiated] Prospect: ${name} (${email}) | Clinic: ${clinic}`);
 
-    // Tier 1: Supabase persistence
+    // Tier 1: Local Lead persistence
     const dbResult = await persistLead({
       name,
       email,
@@ -157,16 +157,28 @@ export async function submitContactForm(_prevState: unknown, formData: FormData)
       },
     });
 
-    // Tier 2: Real-time webhook notification
+    // Tier 2: Real-time Shared CRM Synchronization
+    await syncLeadToSharedCrm({
+      name,
+      email,
+      clinic,
+      practiceType,
+      callVolume,
+      message,
+      source: "contact_form",
+      hasCallSoftware: hasCallSoftware === "yes",
+      callSoftwareName,
+    });
+
+    // Tier 3: Real-time team webhook alert
     const webhookDispatched = await dispatchWebhookNotification(payload);
 
-    // Tier 3: Transactional emails via Resend
+    // Tier 4: Transactional email notifications via Resend
     let internalEmailDispatched = false;
     let prospectEmailDispatched = false;
     const resend = getResend();
 
     if (resend) {
-      // Internal sales team alert
       try {
         let internalHtml: string;
         try {
@@ -187,7 +199,6 @@ export async function submitContactForm(_prevState: unknown, formData: FormData)
         console.error("[RESEND_INTERNAL_EXCEPTION]:", err);
       }
 
-      // Prospect confirmation autoresponder
       try {
         const prospectRes = await resend.emails.send({
           from: "PyrexxAI Discovery <hello@pyrexxai.com>",
@@ -201,12 +212,12 @@ export async function submitContactForm(_prevState: unknown, formData: FormData)
       }
     }
 
-    console.log(`[AUDIT_TELEMETRY] [contact_inbound_resolved] Total time: ${Date.now() - startTime}ms | DB: ${dbResult.success} | Webhook: ${webhookDispatched} | InternalAlert: ${internalEmailDispatched} | ProspectOutreach: ${prospectEmailDispatched}`);
+    console.info(`[AUDIT_TELEMETRY] [contact_inbound_resolved] Total time: ${Date.now() - startTime}ms | DB: ${dbResult.success} | Webhook: ${webhookDispatched} | InternalAlert: ${internalEmailDispatched} | ProspectOutreach: ${prospectEmailDispatched}`);
 
     if (dbResult.success || webhookDispatched || internalEmailDispatched || prospectEmailDispatched) {
       return {
         success: true,
-        message: "Your inquiry has been recorded. Our engineering team will review your EMR requirements and reach out within 24 hours.",
+        message: "Your inquiry has been recorded. An executive summary has been dispatched to your email, and our team will reach out within 24 hours.",
       };
     }
 
