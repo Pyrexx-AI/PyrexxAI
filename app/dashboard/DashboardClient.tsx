@@ -78,15 +78,27 @@ export default function DashboardClient() {
   return (
     <>
       <div className="demo-banner" style={{ marginBottom: 14 }}>
-        <p style={{ display: "flex", gap: 12, alignItems: "center" }}>
-          <Flame className="icon" style={{ color: "var(--violet)" }} aria-hidden="true" />
-          <span>
-            <b>Explore PyrexxAI Command Center (Live Demonstration)</b>
-            <span>This is a fully featured model of your future client dashboard. Book a consultation to activate this system for your practice.</span>
-          </span>
-        </p>
-        <Link href={BOOK_DEMO_HREF} className="btn btn--primary">Request Setup &rarr;</Link>
-      </div>
+				<p style={{ display: "flex", gap: 12, alignItems: "center" }}>
+					<Flame className="icon" style={{ color: "var(--violet)" }} aria-hidden="true" />
+					<span>
+						<b>Explore PyrexxAI Command Center (Live Demonstration)</b>
+						<span>This is a fully featured model of your future client dashboard. Activate this system directly or request a technical onboarding.</span>
+					</span>
+				</p>
+				<div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+					<a 
+						href="https://app.pyrexxai.com" 
+						target="_blank" 
+						rel="noopener noreferrer" 
+						className="btn btn--ghost"
+					>
+						Manual Setup &rarr;
+					</a>
+					<Link href={BOOK_DEMO_HREF} className="btn btn--primary">
+						Request Setup &rarr;
+					</Link>
+				</div>
+			</div>
 
       <div className="dash">
         <aside>

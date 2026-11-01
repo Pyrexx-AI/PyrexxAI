@@ -1,15 +1,14 @@
 /** @type {import('next').NextConfig} */
 
-// Pragmatic enforced CSP: no third-party embeds exist (booking + chat are first-party API routes).
-// 'unsafe-inline' is required for Next.js inline bootstrap + the next-themes init script.
+// Pragmatic enforced CSP with whitelisted Google Fonts stylesheets and binaries
 const isDev = process.env.NODE_ENV !== "production";
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval' " : ""}https://va.vercel-scripts.com`,
-  "style-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "img-src 'self' data: blob:",
-  "font-src 'self' data:",
-  "connect-src 'self' https://vitals.vercel-insights.com https://va.vercel-scripts.com",
+  "font-src 'self' data: https://fonts.gstatic.com",
+  "connect-src 'self' https://vitals.vercel-insights.com https://va.vercel-scripts.com https://fonts.googleapis.com https://fonts.gstatic.com",
   "manifest-src 'self'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -30,7 +29,6 @@ const nextConfig = {
     remotePatterns: [],
   },
   compiler: {
-    // Keep console.error / console.warn for production diagnostics
     removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error", "warn"] } : false,
   },
   experimental: {
@@ -50,6 +48,12 @@ const nextConfig = {
         destination: "https://pyrexxai.com/:path*",
         permanent: true,
       },
+      // Redirect misspelled calender endpoints to standard calendar routes
+      {
+        source: "/api/calender/:path*",
+        destination: "/api/calendar/:path*",
+        permanent: true,
+      },
     ];
   },
   async headers() {
@@ -67,7 +71,6 @@ const nextConfig = {
         ],
       },
       {
-        // Brand assets are content-addressed by deployment; cache aggressively
         source: "/:file(logo.png|favicon.ico|favicon.svg|favicon-96x96.png|apple-touch-icon.png|web-app-manifest-192x192.png|web-app-manifest-512x512.png)",
         headers: [{ key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=86400" }],
       },

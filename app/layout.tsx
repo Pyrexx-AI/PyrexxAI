@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -12,14 +11,6 @@ import RevealObserver from "@/components/ui/RevealObserver";
 import JsonLd from "@/components/ui/JsonLd";
 import { organizationSchema, softwareSchema, websiteSchema } from "@/lib/schema";
 import { SITE } from "@/lib/site";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-inter",
-  adjustFontFallback: true,
-});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -95,13 +86,20 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1 },
   },
-  // NOTE: no site-wide canonical here. Each page sets its own via buildMetadata(),
-  // otherwise every page would inherit the home page canonical.
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Preconnect to Google Fonts CDN for zero-latency asset streaming */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body>
         <noscript>
           <style>{`[data-reveal]{opacity:1!important;transform:none!important}`}</style>
