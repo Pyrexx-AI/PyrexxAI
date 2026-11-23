@@ -1,7 +1,7 @@
 {
-  "name": "PyrexxAI — Healthcare Voice AI",
-  "short_name": "PyrexxAI",
-  "description": "Enterprise AI Voice Receptionists and EMR Integrations for Medical Clinics",
+  "name": "Pyrexx AI — Healthcare Voice AI",
+  "short_name": "Pyrexx AI",
+  "description": "Empathetic AI Voice Receptionists and EMR Integrations for Private Practice Healthcare & Wellness Clinics",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -9,13 +9,13 @@ type Message = { id: string; role: "ai" | "user"; content: string };
 const GREETING: Message = {
   id: "greeting",
   role: "ai",
-  content: "Hi there! 👋 I'm the PyrexxAI virtual assistant. Ask me anything about our AI front desk and EMR integrations!",
+  content: "Hi there! 👋 I'm Pyrexx, The virtual assistant. Ask me anything about our services!",
 };
 
 const SUGGESTIONS = [
   { label: "EMR Integrations", query: "What EMR systems does the AI integrate with?" },
   { label: "HIPAA Compliance", query: "Is this voice AI fully HIPAA compliant?" },
-  { label: "Pricing Setup", query: "How much does PyrexxAI cost?" },
+  { label: "Pricing Setup", query: "How much does Pyrexx AI receptionists cost?" },
 ];
 
 const STORAGE_KEY = "pyrexxai-chat-v2";
@@ -116,7 +116,7 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
       id="chat-panel"
       className="chat"
       role="dialog"
-      aria-label="PyrexxAI Virtual Assistant Chat"
+      aria-label="Pyrexx AI Virtual Assistant Chat"
       hidden={!open}
     >
       <div className="chat__head">

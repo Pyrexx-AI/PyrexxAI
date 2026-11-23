@@ -1,7 +1,7 @@
 const STATS = [
   { value: "38%", label: "of clinic calls go unanswered" },
   { value: "$67K+", label: "lost annually per practice" },
-  { value: "14 Days", label: "from kickoff to live AI agent" },
+  { value: "14 Bus. Days", label: "from kickoff to live AI agent" },
   { value: "24/7", label: "coverage with zero overtime" },
 ];
 

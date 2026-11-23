@@ -34,11 +34,11 @@ export const websiteSchema = () => ({
 export const softwareSchema = () => ({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "PyrexxAI Voice Receptionist Engine",
+  name: "Pyrexx AI Voice Receptionist Engine",
   operatingSystem: "Cloud / Web",
   applicationCategory: "HealthApplication",
   sameAs: ["https://www.wikidata.org/wiki/Q356350", "https://www.wikidata.org/wiki/Q1140323"],
-  offers: { "@type": "Offer", price: "1500.00", priceCurrency: "USD" },
+  offers: { "@type": "Offer", startingPrice: "1000.00", priceCurrency: "USD" },
 });
 
 export const breadcrumbSchema = (items: { name: string; path: string }[]) => ({

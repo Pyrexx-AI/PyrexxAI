@@ -14,7 +14,7 @@ export default function Hero() {
               The 24/7 Voice AI <span className="text-gradient">Front Desk for Clinics.</span>
             </h1>
             <p className="hero__lead">
-              38% of healthcare calls go unanswered. PyrexxAI deploys lifelike AI receptionists that answer every
+              38% of healthcare calls go unanswered. Pyrexx AI deploys lifelike AI receptionists that answer every
               inbound call instantly, verify pricing, and write bookings directly into your EMR.
             </p>
             <div className="hero__cta">
@@ -39,7 +39,7 @@ export default function Hero() {
           </span>
           <span>
             <Clock className="icon" style={{ color: "var(--violet)" }} aria-hidden="true" />
-            14-Day Deployment
+            14 Business-Day Deployment
           </span>
         </div>
       </div>

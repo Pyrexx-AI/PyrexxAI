@@ -1,14 +1,15 @@
 /** Single source of truth for site-wide constants. */
 export const SITE = {
-  name: "PyrexxAI",
+  name: "Pyrexx AI",
   url: "https://pyrexxai.com",
   email: "hello@pyrexxai.com",
+  supportEmail: "support@pyrexxai.com",
   privacyEmail: "privacy@pyrexxai.com",
   phone: "+1 (302) 337-6310",
   phoneHref: "tel:+13023376310",
   founder: "Clifford Bulya",
   founderTitle: "Founder & CEO",
-  tagline: "AI Voice Receptionists for MedSpas & Dental Clinics",
+  tagline: "AI Receptionists for Private Practice Healthcare & Wellness",
   social: [
     { label: "GitHub", href: "https://github.com/PyrexxAI" },
     { label: "LinkedIn", href: "https://linkedin.com/company/pyrexxai" },
@@ -21,10 +22,10 @@ export const SITE = {
 } as const;
 
 export const BOOK_DEMO_HREF = "/book-demo";
+export const APP_SIGNUP_HREF = "https://app.pyrexxai.com/signup";
 
-/** ISO date the marketing content was last reviewed (drives sitemap lastModified). */
-export const CONTENT_UPDATED = "2026-10-19";
-export const LEGAL_UPDATED = "2026-08-20";
+export const CONTENT_UPDATED = "2026-11-23";
+export const LEGAL_UPDATED = "2026-11-23";
 
 export function absoluteUrl(path = "/"): string {
   return path === "/" ? SITE.url : `${SITE.url}${path}`;

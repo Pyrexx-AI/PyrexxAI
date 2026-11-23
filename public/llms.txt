@@ -1,37 +1,41 @@
-# PyrexxAI
+# Pyrexx AI
 
-> PyrexxAI is an AI-driven digital transformation agency for MedSpas, dental clinics, and therapy practices in the US.
-> We specialize in custom AI voice receptionists, clinical web development, and database reactivation campaigns.
+> Pyrexx AI is a HIPAA-compliant AI voice receptionist and clinical automation agency for private practice healthcare and wellness clinics in the US.
 
 ## Company
 - Founded by: Clifford Bulya
 - Headquarters: United States (Delaware incorporated)
-- Contact: hello@pyrexxai.com
+- General Inquiries: hello@pyrexxai.com
+- Client Support: support@pyrexxai.com
 - GitHub: https://github.com/PyrexxAI
 
 ## Core Services
 
 ### 1. AI Voice Receptionist
-- Done-for-you AI voice receptionist implementation (not a SaaS tool)
-- Live in 14 days from kickoff to production
-- Integrates natively with Jane App, Mindbody, eClinicalWorks and other EMRs
-- Handles unlimited concurrent calls (zero hold times)
-- Business Associate Agreement (BAA) included with all clients
-- Pricing: $1,500 implementation + $1,000/month platform management
+- Done-for-you AI voice receptionist implementation (not a DIY SaaS tool)
+- Live in 14 business days from kickoff to production
+- Integrates with Jane App, Boulevard, Mindbody, Open Dental, Dentrix, Eaglesoft, SimplePractice, TherapyNotes, ChiroTouch, ModMed, DrChrono, Cliniko, eClinicalWorks, AthenaHealth, and custom systems
+- Handles concurrent inbound calls with zero hold times
+- Business Associate Agreement (BAA) executed before launch
+- Pricing: $1,000 one-time initial implementation & EMR setup fee + $1,000/month (Overflow Plan: after-hours, weekends & breaks) or $1,500/month (Full-Time Plan: 100% 24/7 inbound coverage)
 
-### 2. Website Building & Optimization
-- Blazing fast, SEO-optimized clinical websites built on Next.js
-- HIPAA-compliant lead capture pipelines
-- Built for high mobile conversion
-
-### 3. Database Reactivation
+### 2. Patient Database Reactivation (Free Subscription Add-On)
 - Automated SMS/Voice outreach to dormant patient lists
-- 100% Risk-Free, Commission-Only model (Pay only for shows)
+- Included FREE with every active AI Receptionist subscription
 
-## Target Clients
+### 3. Website Building & AI Lead Intake
+- Blazing fast, SEO-optimized clinical websites built on Next.js
+- Sub-60s web and SMS lead qualification
+
+## Target Private Practice Verticals
 - Medical Spas (MedSpas)
-- Dental Practices
-- Therapy and Mental Health Clinics
+- General & Cosmetic Dentistry
+- Orthodontics & Clear Aligners
+- Dermatology (Medical & Cosmetic)
+- Chiropractic & Physical Therapy / Sports Rehab
+- Behavioral Health & Therapy Practices
+- Audiology & Hearing Aid Clinics
+- Medical Weight Loss (GLP-1) & Hormone Replacement Therapy (HRT)
 
 ## Key Pages
 - [Homepage](https://pyrexxai.com)
@@ -40,9 +44,10 @@
 - [Database Reactivation details](https://pyrexxai.com/database-reactivation)
 - [HIPAA Compliance & Data Security](https://pyrexxai.com/hipaa-compliance)
 - [About the Company](https://pyrexxai.com/about)
-- [Contact PyrexxAI](https://pyrexxai.com/contact)
+- [Contact Pyrexx AI](https://pyrexxai.com/contact)
 - [Book a Discovery Call](https://pyrexxai.com/book-demo)
 - [Live Dashboard Demo](https://pyrexxai.com/dashboard)
+- [Client Onboarding](https://app.pyrexxai.com/signup)
 - [Careers](https://pyrexxai.com/careers)
 
 ## EMR Integrations

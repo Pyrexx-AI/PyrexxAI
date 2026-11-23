@@ -25,7 +25,7 @@ const AT_A_GLANCE = [
   "Handles 100% of inbound call volume",
   "Native EMR API bridges, no fragile webhooks",
   "HIPAA compliant, BAA provided",
-  "Live in 14 days",
+  "Live in 14 business days",
 ];
 
 const EMR_FEATURES = [
@@ -49,15 +49,15 @@ export default function AIReceptionistPage() {
           </>
         }
       >
-        Stop losing patients to voicemail. PyrexxAI provides a lifelike, HIPAA-compliant voice agent that handles 100% of your inbound call volume, books appointments directly into your EMR, and answers complex patient FAQs in real-time.
+        Stop losing patients to voicemail. Pyrexx AI provides a lifelike, HIPAA-compliant voice agent that handles 100% of your inbound call volume, books appointments directly into your EMR, and answers complex patient FAQs in real-time.
       </PageHeader>
 
       <Section aria-labelledby="what-title">
         <div className="split">
           <div data-reveal>
-            <h2 id="what-title">What is a PyrexxAI Receptionist?</h2>
+            <h2 id="what-title">What is a Pyrexx AI Receptionist?</h2>
             <p className="lead">
-              PyrexxAI is an enterprise-grade AI voice agent custom-engineered for MedSpas, Dental Clinics, and Therapy Practices. It utilizes advanced Natural Language Processing (NLP) to converse seamlessly with patients, verify pricing and procedures, and write scheduled appointments directly into clinical management systems like Jane, Boulevard, and Mindbody without human intervention.
+              Pyrexx AI is an enterprise-grade AI voice agent custom-engineered for MedSpas, Dental Clinics, and Therapy Practices. It utilizes advanced Natural Language Processing (NLP) to converse seamlessly with patients, verify pricing and procedures, and write scheduled appointments directly into clinical management systems like Jane, Boulevard, and Mindbody without human intervention.
             </p>
           </div>
           <div className="card" data-reveal>
@@ -75,9 +75,9 @@ export default function AIReceptionistPage() {
         <div className="split">
           <div>
             <div data-reveal>
-              <h2 id="emr-title">How does PyrexxAI integrate with your EMR?</h2>
+              <h2 id="emr-title">How does Pyrexx AI integrate with your EMR?</h2>
               <p className="lead">
-                Unlike DIY AI builders that rely on fragile webhooks, PyrexxAI builds native API bridges to your existing Electronic Medical Record (EMR) or booking software. The AI reads your real-time availability calendar, offers open slots to the patient over the phone, and instantly writes the confirmed appointment into your system.
+                Unlike DIY AI builders that rely on fragile webhooks, Pyrexx AI builds native API bridges to your existing Electronic Medical Record (EMR) or booking software. The AI reads your real-time availability calendar, offers open slots to the patient over the phone, and instantly writes the confirmed appointment into your system.
               </p>
             </div>
             <div className="stack" style={{ marginTop: 18 }}>

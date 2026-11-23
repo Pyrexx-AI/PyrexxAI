@@ -26,11 +26,11 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: "PyrexxAI | AI Voice Receptionists for MedSpas & Dental Clinics",
-    template: "%s | PyrexxAI",
+    default: "Pyrexx AI | AI Voice Receptionists for Private Practice Healthcare & Wellness",
+    template: "%s | Pyrexx AI",
   },
   description:
-    "PyrexxAI deploys custom-trained AI voice receptionists for MedSpas, dental clinics, and therapy practices. Capture every call 24/7, book appointments automatically, and eliminate missed revenue — HIPAA-compliant.",
+    "Pyrexx AI deploys sympathetic, emotionally intelligent AI voice receptionists for private practice healthcare & wellness clinics. Capture every call 24/7, book appointments into your EMR, and eliminate missed revenue — HIPAA-compliant, live in 14 business days.",
   applicationName: SITE.name,
   icons: {
     icon: [
@@ -41,17 +41,17 @@ export const metadata: Metadata = {
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   manifest: "/site.webmanifest",
-  appleWebApp: { title: "PyrexxAI", statusBarStyle: "default" },
+  appleWebApp: { title: "Pyrexx AI", statusBarStyle: "default" },
   keywords: [
+    "AI receptionist for private practice healthcare",
     "AI receptionist for medspa",
     "AI voice agent dental clinic",
-    "AI front desk healthcare",
+    "AI front desk behavioral health",
     "HIPAA compliant AI receptionist",
     "automated appointment booking clinic",
-    "AI lead intake medical practice",
-    "24/7 AI phone answering medspa",
+    "GLP-1 weight loss clinic AI receptionist",
     "Jane App AI integration",
-    "Boulevard EMR AI voice agent",
+    "Open Dental AI voice receptionist",
   ],
   authors: [{ name: SITE.name }],
   creator: SITE.name,
@@ -61,24 +61,24 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: SITE.url,
     siteName: SITE.name,
-    title: "PyrexxAI — AI Voice Receptionists That Never Miss a Patient Call",
+    title: "Pyrexx AI — AI Voice Receptionists That Never Miss a Patient Call",
     description:
-      "Stop losing revenue to missed calls. PyrexxAI deploys fully custom AI receptionists for MedSpas, dental, and therapy clinics — HIPAA-compliant, live in 14 days.",
+      "Stop losing revenue to missed calls. Pyrexx AI deploys custom AI receptionists for private practice healthcare & wellness clinics — HIPAA-compliant, live in 14 business days.",
     images: [
       {
-        url: "/api/og?title=AI%20Voice%20Receptionist%20for%20Clinics",
+        url: "/api/og?title=AI%20Voice%20Receptionists%20for%20Clinics",
         width: 1200,
         height: 630,
-        alt: "PyrexxAI — AI Voice Receptionists for Healthcare Clinics",
+        alt: "Pyrexx AI — AI Voice Receptionists for Private Practice Clinics",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "PyrexxAI — AI Receptionists for MedSpas & Clinics",
+    title: "Pyrexx AI — AI Receptionists for Private Practice Clinics",
     description:
-      "Custom AI voice agents that answer every call, book appointments 24/7, and integrate with your EMR. HIPAA-compliant. Live in 14 days.",
-    images: ["/api/og?title=AI%20Voice%20Receptionist%20for%20Clinics"],
+      "Custom AI voice agents that answer every call, book appointments 24/7, and integrate with your EMR. HIPAA-compliant. Live in 14 business days.",
+    images: ["/api/og?title=AI%20Voice%20Receptionists%20for%20Clinics"],
     creator: "@pyrexxai",
   },
   robots: {
@@ -92,7 +92,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Preconnect to Google Fonts CDN for zero-latency asset streaming */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

@@ -5,7 +5,7 @@ export const runtime = "edge";
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const title = searchParams.get("title") || "AI Voice Receptionist for Medical Clinics";
+    const title = searchParams.get("title") || "AI Voice Receptionists for Private Practice Clinics";
     const subtitle = searchParams.get("subtitle") || "Answer every patient call 24/7 & sync directly with your EMR.";
 
     return new ImageResponse(
@@ -24,7 +24,6 @@ export async function GET(request: Request) {
             backgroundImage: "radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.25) 0%, transparent 50%)",
           }}
         >
-          {/* Header Branding */}
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
             <div
               style={{
@@ -43,7 +42,7 @@ export async function GET(request: Request) {
               PX
             </div>
             <span style={{ fontSize: "32px", fontWeight: "800", color: "#FFFFFF", letterSpacing: "-0.02em" }}>
-              PyrexxAI
+              Pyrexx AI
             </span>
             <div
               style={{
@@ -62,7 +61,6 @@ export async function GET(request: Request) {
             </div>
           </div>
 
-          {/* Main Title & Subtitle */}
           <div style={{ display: "flex", flexDirection: "column", gap: "20px", maxWidth: "950px" }}>
             <h1
               style={{
@@ -81,7 +79,6 @@ export async function GET(request: Request) {
             </p>
           </div>
 
-          {/* Footer Metrics */}
           <div
             style={{
               display: "flex",
@@ -95,15 +92,15 @@ export async function GET(request: Request) {
             <div style={{ display: "flex", gap: "40px" }}>
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <span style={{ fontSize: "14px", color: "#6B7280", textTransform: "uppercase", fontWeight: "600" }}>
-                  Deployment Time
+                  Deployment SLA
                 </span>
-                <span style={{ fontSize: "22px", color: "#60A5FA", fontWeight: "800" }}>14 Days Guaranteed</span>
+                <span style={{ fontSize: "22px", color: "#60A5FA", fontWeight: "800" }}>14 Business Days</span>
               </div>
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <span style={{ fontSize: "14px", color: "#6B7280", textTransform: "uppercase", fontWeight: "600" }}>
                   EMR Integration
                 </span>
-                <span style={{ fontSize: "22px", color: "#60A5FA", fontWeight: "800" }}>Jane / Boulevard / Mindbody</span>
+                <span style={{ fontSize: "22px", color: "#60A5FA", fontWeight: "800" }}>Jane / Open Dental / Boulevard</span>
               </div>
             </div>
             <span style={{ fontSize: "18px", color: "#2563EB", fontWeight: "700" }}>pyrexxai.com</span>
@@ -115,7 +112,7 @@ export async function GET(request: Request) {
         height: 630,
       }
     );
-  } catch (e: any) {
-    return new Response(`Failed to generate OpenGraph image`, { status: 500 });
+  } catch {
+    return new Response("Failed to generate OpenGraph image", { status: 500 });
   }
 }

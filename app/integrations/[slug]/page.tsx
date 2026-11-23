@@ -32,11 +32,11 @@ export default function IntegrationPage({ params }: Props) {
   const appSchema = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: `PyrexxAI ${data.emrName} Integration`,
+    name: `Pyrexx AI ${data.emrName} Integration`,
     operatingSystem: "Cloud / Web",
     applicationCategory: "HealthApplication",
     description: data.description,
-    offers: { "@type": "Offer", price: "1500.00", priceCurrency: "USD" },
+    offers: { "@type": "Offer", price: "1000.00", priceCurrency: "USD" },
   };
 
   return (
@@ -53,7 +53,7 @@ export default function IntegrationPage({ params }: Props) {
 
       <Section aria-labelledby="why-title">
         <h2 id="why-title" style={{ marginBottom: 20 }} data-reveal>
-          Why {data.category} Choose PyrexxAI for {data.emrName}
+          Why {data.category} Choose Pyrexx AI for {data.emrName}
         </h2>
         <div className="grid grid--2">
           <article className="card" data-reveal>
@@ -77,7 +77,7 @@ export default function IntegrationPage({ params }: Props) {
             </article>
             <article className="card" data-reveal>
               <span className="eyebrow" style={{ marginBottom: 4 }}>Standard Launch SLA</span>
-              <b style={{ fontSize: 18 }}>Live in 14 Days Guaranteed</b>
+              <b style={{ fontSize: 18 }}>Live in 14 Business Days Guaranteed</b>
             </article>
           </div>
         </div>

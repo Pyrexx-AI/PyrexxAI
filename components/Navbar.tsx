@@ -97,13 +97,13 @@ export default function Navbar() {
         <Link
           href="/"
           className="flex items-center space-x-2.5 shrink-0 group"
-          aria-label="PyrexxAI Home"
+          aria-label="Pyrexx AI Home"
           onClick={() => setIsOpen(false)}
         >
           <div className="relative w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform">
             <Image
               src="/logo.png"
-              alt="PyrexxAI Logo"
+              alt="Pyrexx AI Logo"
               fill
               sizes="32px"
               quality={100}
@@ -115,10 +115,9 @@ export default function Navbar() {
             />
             <Bot className="text-white w-5 h-5 absolute z-0" aria-hidden="true" />
           </div>
-          <span className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">PyrexxAI</span>
+          <span className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">Pyrexx AI</span>
         </Link>
 
-        {/* Desktop links */}
         <div className="hidden lg:flex items-center space-x-6 text-sm font-medium text-gray-600 dark:text-gray-300">
           <div
             className="relative"
@@ -231,11 +230,10 @@ export default function Navbar() {
             rel="noopener noreferrer"
             className={`hover:text-brand-600 dark:hover:text-brand-400 transition-colors ${linkFocus} rounded px-2 py-1`}
           >
-            Dashboard
+            Client Login
           </a>
         </div>
 
-        {/* Action CTAs */}
         <div className="flex items-center gap-2 sm:gap-3">
           <ThemeToggle />
           <div className="hidden md:block h-4 w-[1px] bg-gray-200 dark:bg-gray-800 my-auto" aria-hidden="true" />
@@ -249,12 +247,10 @@ export default function Navbar() {
           </Link>
 
           <a
-            href="https://app.pyrexxai.com"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="https://app.pyrexxai.com/signup"
             className={`hidden xl:inline-flex items-center text-gray-700 dark:text-gray-200 px-4 py-2 rounded-full text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${linkFocus}`}
           >
-            Live Dashboard
+            Get Started
           </a>
 
           <Link
@@ -277,7 +273,6 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Drawer */}
       <div
         id="mobile-menu"
         className={`fixed top-[calc(6rem+env(safe-area-inset-top))] left-3 right-3 sm:left-4 sm:right-4 bg-white/95 dark:bg-gray-950/95 backdrop-blur-2xl border border-white/80 dark:border-white/10 shadow-[0_24px_60px_-20px_rgba(124,58,237,0.4)] dark:shadow-2xl rounded-3xl p-5 flex flex-col space-y-3 lg:hidden z-40 max-h-[calc(100dvh-7rem)] overflow-y-auto transition-all duration-200 ease-out ${
@@ -355,18 +350,16 @@ export default function Navbar() {
           onClick={() => setIsOpen(false)}
           className="text-gray-900 dark:text-white text-base font-semibold py-2 border-b border-gray-100 dark:border-gray-800"
         >
-          Dashboard
+          Client Login
         </a>
 
         <div className="pt-3 grid grid-cols-2 gap-3">
           <a
-            href="https://app.pyrexxai.com"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="https://app.pyrexxai.com/signup"
             onClick={() => setIsOpen(false)}
             className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white py-3 rounded-full text-center font-bold text-xs flex items-center justify-center"
           >
-            Live Dashboard
+            Get Started
           </a>
           <Link
             href={CAL_LINK}

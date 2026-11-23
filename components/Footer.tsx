@@ -31,14 +31,14 @@ export default function Footer() {
       <div className="wrap">
         <div className="footer-grid">
           <div>
-            <Link href="/" className="brand" aria-label="PyrexxAI home">
+            <Link href="/" className="brand" aria-label="Pyrexx AI home">
               <span className="brand__mark">
                 <Image src="/logo.png" alt="" fill sizes="28px" />
               </span>
-              PyrexxAI
+              Pyrexx AI
             </Link>
             <p style={{ marginTop: 12, maxWidth: 300 }}>
-              Intelligent voice AI implementations for MedSpas, Dental &amp; Therapy Clinics. Stop missing calls, start scaling.
+              Intelligent voice AI receptionists for private practice healthcare &amp; wellness clinics. Stop missing calls, start scaling.
             </p>
             <div className="social">
               {SITE.social.map((s) => (
@@ -97,7 +97,7 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} PyrexxAI. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Pyrexx AI. All rights reserved.</p>
           <span>Engineered for seamless patient experiences.</span>
         </div>
       </div>

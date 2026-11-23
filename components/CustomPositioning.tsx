@@ -2,7 +2,7 @@ import { Section, SectionHead } from "@/components/ui/Section";
 
 const ROWS = [
   ["Agent Persona", "Generic template voices", "Custom-trained clinic voice & tone"],
-  ["Setup Effort", "You configure everything yourself", "Done-for-you in 14 days"],
+  ["Setup Effort", "You configure everything yourself", "Done-for-you in 14 business days"],
   ["EMR Integration", "Fragile generic webhooks", "Direct native calendar read/write bridges"],
   ["Ongoing Maintenance", "No dedicated engineering support", "Weekly logic upgrades & re-training"],
   ["Compliance & Legal", "You figure out HIPAA liability", "Signed BAA + Full HIPAA guarantee"],
@@ -13,7 +13,7 @@ export default function CustomPositioning() {
     <Section alt aria-labelledby="positioning-title">
       <SectionHead
         id="positioning-title"
-        eyebrow="Why PyrexxAI"
+        eyebrow="Why Pyrexx AI"
         title={<>Not just another tool. <br />A complete technical partner.</>}
       >
         Most AI tools hand you a dashboard and a manual. PyrexxAI acts as your dedicated AI engineering implementation team. We map your clinical intake workflows, build your agent from scratch, integrate with your specific EMR, and handle every edge case.
@@ -24,7 +24,7 @@ export default function CustomPositioning() {
             <tr>
               <th scope="col">Feature</th>
               <th scope="col">DIY Voice AI Software</th>
-              <th scope="col">PyrexxAI Agency</th>
+              <th scope="col">Pyrexx AI Agency</th>
             </tr>
           </thead>
           <tbody>
@@ -32,7 +32,7 @@ export default function CustomPositioning() {
               <tr key={feature}>
                 <td>{feature}</td>
                 <td data-label="DIY Voice AI Software">{diy}</td>
-                <td data-label="PyrexxAI Agency">{us}</td>
+                <td data-label="Pyrexx AI Agency">{us}</td>
               </tr>
             ))}
           </tbody>
