@@ -8,6 +8,14 @@ export interface KnowledgeItem {
   keywords: string[];
 }
 
+interface DbKnowledgeRow {
+  id: string;
+  category: KnowledgeItem["category"];
+  title: string;
+  content: string;
+  keywords: unknown;
+}
+
 export const EMBEDDED_KNOWLEDGE_BASE: KnowledgeItem[] = [
   {
     id: "pricing_structure",
@@ -81,7 +89,6 @@ async function fetchAgencyKnowledge(): Promise<KnowledgeItem[]> {
   if (!supabase) return EMBEDDED_KNOWLEDGE_BASE;
 
   try {
-    // Strictly resolve the master agency org so clinic sub-account rows never leak into public chat
     const { data: agencyOrg } = await supabase
       .from("organizations")
       .select("id")
@@ -125,13 +132,13 @@ async function fetchAgencyKnowledge(): Promise<KnowledgeItem[]> {
     }
 
     if (kbRes.data && kbRes.data.length > 0) {
-      for (const d of kbRes.data as any[]) {
+      for (const d of kbRes.data as DbKnowledgeRow[]) {
         items.push({
           id: d.id,
           category: d.category,
           title: d.title,
           content: d.content,
-          keywords: Array.isArray(d.keywords) ? d.keywords : [],
+          keywords: Array.isArray(d.keywords) ? d.keywords.map(String) : [],
         });
       }
     } else {

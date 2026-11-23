@@ -14,7 +14,7 @@ const fmt = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD",
 function Slider({
   id, label, value, min, max, step, display, onChange,
 }: {
-  id: string; label: string; value: number; min, max: number; step: number; display: string; onChange: (v: number) => void;
+  id: string; label: string; value: number; min: number; max: number; step: number; display: string; onChange: (v: number) => void;
 }) {
   return (
     <div className="field">
