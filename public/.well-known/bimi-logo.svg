@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 512 512" width="512" height="512" overflow="visible">
+  <title>Pyrexx AI</title>
+  <defs>
+    <!-- Cyan / Teal Ribbon Gradient -->
+    <linearGradient id="pyrexxCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#0891b2"/>
+    </linearGradient>
+
+    <!-- Purple / Violet Ribbon Gradient -->
+    <linearGradient id="pyrexxPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="50%" stop-color="#9333ea"/>
+      <stop offset="100%" stop-color="#6b21a8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Clean Circular Dark Background Safe Container -->
+  <rect width="512" height="512" rx="100" fill="#0f172a"/>
+  
+  <!-- Outer Dark Contour Frame -->
+  <path d="M176 80 L336 80 Q376 80 404 108 L404 108 Q432 136 432 176 L432 336 Q432 376 404 404 Q376 432 336 432 L176 432 Q136 432 108 404 Q80 376 80 336 L80 176 Q80 136 108 108 Q136 80 176 80 Z"
+        fill="#1e293b" stroke="#334155" stroke-width="8"/>
+
+  <!-- Centered Interlocking X Structure (Fitted for Circular Inboxes) -->
+  <g transform="translate(256, 256) scale(0.72) translate(-256, -256)">
+    <!-- White Under-Glow / Border for Ribbons -->
+    <!-- Left Loop (Cyan) White Underlay -->
+    <path d="M150 110 C210 110, 240 180, 256 220 C272 180, 302 110, 362 110 C410 110, 440 145, 440 190 C440 230, 410 260, 370 290 L290 350 C265 370, 247 370, 222 350 L142 290 C102 260, 72 230, 72 190 C72 145, 102 110, 150 110 Z"
+          fill="none" stroke="#ffffff" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Left Cyan Loop Ribbon -->
+    <path d="M150 110 C210 110, 240 180, 256 220 C272 180, 302 110, 362 110 C410 110, 440 145, 440 190 C440 230, 410 260, 370 290 L290 350 C265 370, 247 370, 222 350 L142 290 C102 260, 72 230, 72 190 C72 145, 102 110, 150 110 Z"
+          fill="none" stroke="url(#pyrexxCyan)" stroke-width="42" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Right Loop (Purple) White Underlay -->
+    <path d="M362 402 C302 402, 272 332, 256 292 C240 332, 210 402, 150 402 C102 402, 72 367, 72 322 C72 282, 102 252, 142 222 L222 162 C247 142, 265 142, 290 162 L370 222 C410 252, 440 282, 440 322 C440 367, 410 402, 362 402 Z"
+          fill="none" stroke="#ffffff" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Right Purple Loop Ribbon -->
+    <path d="M362 402 C302 402, 272 332, 256 292 C240 332, 210 402, 150 402 C102 402, 72 367, 72 322 C72 282, 102 252, 142 222 L222 162 C247 142, 265 142, 290 162 L370 222 C410 252, 440 282, 440 322 C440 367, 410 402, 362 402 Z"
+          fill="none" stroke="url(#pyrexxPurple)" stroke-width="42" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Center Interlocking Overpass Weave -->
+    <path d="M222 162 C247 142, 265 142, 290 162 L320 185"
+          fill="none" stroke="#ffffff" stroke-width="56" stroke-linecap="round"/>
+    <path d="M222 162 C247 142, 265 142, 290 162 L320 185"
+          fill="none" stroke="url(#pyrexxCyan)" stroke-width="42" stroke-linecap="round"/>
+  </g>
+</svg>

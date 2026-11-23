@@ -8,123 +8,156 @@ export interface KnowledgeItem {
   keywords: string[];
 }
 
-/**
- * Built-in authoritative knowledge base.
- * Acts as the high-speed baseline and offline fallback.
- */
 export const EMBEDDED_KNOWLEDGE_BASE: KnowledgeItem[] = [
   {
     id: "pricing_structure",
     category: "pricing",
-    title: "Pricing & Retainer Structure",
-    content: "PyrexxAI requires a $1,500 one-time setup and onboarding fee, followed by a flat $1,000 per month platform management retainer. This covers 24/7 unlimited concurrent calls with zero hold times, weekly voice logic tuning, custom EMR integration, and complete HIPAA compliance.",
-    keywords: ["cost", "price", "pricing", "fee", "setup", "how much", "rate", "expensive", "monthly", "retainer", "budget", "package"],
+    title: "Pricing & Plans (Overflow vs Full-Time)",
+    content:
+      "Pyrexx AI offers two core AI Receptionist plans, both with a $1,000 one-time initial implementation and EMR integration setup fee: (1) Overflow AI Receptionist at $1,000/month for after-hours, weekend, and staff-break coverage; and (2) Full-Time AI Receptionist at $1,500/month covering 100% of inbound calls 24/7 with zero hold times, weekly voice tuning, and HIPAA compliance.",
+    keywords: ["cost", "price", "pricing", "fee", "setup", "how much", "rate", "monthly", "retainer", "overflow", "full time", "package"],
   },
   {
     id: "database_reactivation_pricing",
     category: "pricing",
-    title: "Database Reactivation Commercials",
-    content: "Database reactivation is 100% commission-only with zero upfront fees. The clinic only pays a pre-agreed commission when a dormant patient actually books and shows up for their treatment.",
-    keywords: ["reactivation", "dormant", "commission", "risk-free", "past patients", "shows"],
+    title: "Database Reactivation (Free Subscription Add-On)",
+    content:
+      "Database reactivation is included as a FREE add-on for clinics on an active Pyrexx AI Receptionist subscription. Our AI reaches out to dormant patients who haven't visited in 6+ months to fill empty schedule slots automatically.",
+    keywords: ["reactivation", "dormant", "free", "add-on", "past patients", "shows"],
   },
   {
     id: "timeline_sla",
     category: "timeline",
     title: "Implementation Timeline",
-    content: "PyrexxAI goes live in exactly 14 business days from the kickoff call. During these 14 days, we map your clinical intake workflows, train your custom voice agent on your procedures, and build native API bridges directly into your EMR.",
+    content:
+      "Pyrexx AI goes live in 14 business days from kickoff. During these 14 business days, we map your clinical intake workflows, train your custom voice agent on your procedures and insurance policies, and integrate directly with your EMR.",
     keywords: ["timeline", "how long", "go live", "live", "duration", "fast", "deploy", "setup time", "schedule", "when"],
   },
   {
     id: "emr_integrations",
     category: "integrations",
     title: "EMR & Practice Management Integrations",
-    content: "PyrexxAI builds native read/write API bridges with Jane App, Boulevard, Mindbody, eClinicalWorks, and AthenaHealth. The voice agent reads real-time practitioner availability, verifies procedure durations, and writes confirmed bookings directly to your schedule with zero double-bookings. No fragile webhooks are used.",
-    keywords: ["emr", "ehr", "jane", "jane app", "boulevard", "mindbody", "athena", "eclinicalworks", "software", "calendar", "integration", "sync", "double booking"],
+    content:
+      "Pyrexx AI supports private practice healthcare and wellness EMR/PMS platforms including Jane App, Boulevard, Mindbody, Open Dental, Dentrix, Eaglesoft, SimplePractice, TherapyNotes, ChiroTouch, ModMed, DrChrono, Cliniko, eClinicalWorks, and AthenaHealth. If a clinic uses another system, we engineer custom integration bridges during onboarding.",
+    keywords: ["emr", "ehr", "pms", "jane", "boulevard", "mindbody", "dentrix", "open dental", "eaglesoft", "simplepractice", "therapynotes", "chirotouch", "athena", "eclinicalworks", "integration", "sync"],
   },
   {
     id: "hipaa_compliance",
     category: "hipaa",
     title: "HIPAA Security & BAA Commitment",
-    content: "PyrexxAI is 100% HIPAA and HITECH compliant. We execute a signed Business Associate Agreement (BAA) with every clinic before deployment. All voice and text data is encrypted in transit using TLS 1.3 and at rest using AES-256. Zero Protected Health Information (PHI) is ever used to train public foundation models.",
-    keywords: ["hipaa", "compliance", "baa", "security", "privacy", "phi", "encryption", "safe", "legal", "protect", "confidential"],
+    content:
+      "Pyrexx AI is HIPAA compliant by design and executes a signed Business Associate Agreement (BAA) before launch. Voice calls run on BAA-covered telephony and AI infrastructure encrypted with TLS 1.3 in transit and AES-256 at rest, with zero Protected Health Information (PHI) ever used to train public models.",
+    keywords: ["hipaa", "compliance", "baa", "security", "privacy", "phi", "encryption", "safe", "legal", "protect"],
   },
   {
     id: "telephony_capacity",
     category: "telephony",
-    title: "Concurrent Calls & Phone Forwarding",
-    content: "PyrexxAI handles unlimited concurrent inbound calls simultaneously, completely eliminating hold music and voicemail. Clinics keep their existing phone numbers and VOIP systems; we configure conditional call forwarding for after-hours or when staff are busy.",
-    keywords: ["concurrent", "multiple calls", "busy", "phone number", "voip", "forwarding", "hold time", "voicemail", "simultaneous"],
+    title: "Concurrent Calls & Conditional Call Forwarding",
+    content:
+      "Pyrexx AI handles concurrent inbound calls simultaneously, eliminating hold music and voicemail. Clinics keep their existing phone numbers and VoIP systems; we configure Conditional Call Forwarding (CCF) for after-hours, busy lines, or full-time reception.",
+    keywords: ["concurrent", "multiple calls", "busy", "phone number", "voip", "forwarding", "hold time", "voicemail"],
   },
   {
     id: "triage_and_rescheduling",
     category: "services",
-    title: "Emergency Triage & Rescheduling",
-    content: "Patients can call 24/7 to reschedule or cancel existing appointments automatically. For medical emergencies, custom routing rules instantly forward urgent callers to an on-call physician or provide emergency bypass protocols.",
-    keywords: ["emergency", "reschedule", "cancel", "after hours", "triage", "urgent", "doctor", "move appointment"],
+    title: "Emergency Triage, 988 & Rescheduling",
+    content:
+      "Patients can call 24/7 to book, reschedule, or cancel appointments. Deterministic escalation rules forward urgent calls to a designated staff escalation line (never looping back to the main line), and behavioral health agents enforce immediate 988 crisis guardrails.",
+    keywords: ["emergency", "reschedule", "cancel", "after hours", "triage", "urgent", "988", "crisis"],
   },
 ];
 
-// In-memory cache for live database overrides (5-minute TTL)
-let dbKnowledgeCache: KnowledgeItem[] | null = null;
+let cachedItems: KnowledgeItem[] | null = null;
 let lastCacheFetch = 0;
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
-/**
- * Fetches dynamic overrides from the shared Supabase `company_knowledge` table if present.
- */
-async function fetchDatabaseKnowledge(): Promise<KnowledgeItem[]> {
+async function fetchAgencyKnowledge(): Promise<KnowledgeItem[]> {
   const now = Date.now();
-  if (dbKnowledgeCache && now - lastCacheFetch < CACHE_TTL_MS) {
-    return dbKnowledgeCache;
+  if (cachedItems && now - lastCacheFetch < CACHE_TTL_MS) {
+    return cachedItems;
   }
 
   const supabase = getSupabaseClient();
   if (!supabase) return EMBEDDED_KNOWLEDGE_BASE;
 
   try {
-    const { data, error } = await supabase
-      .from("company_knowledge")
-      .select("id, category, title, content, keywords")
-      .eq("is_active", true)
-      .abortSignal(AbortSignal.timeout(1200));
+    // Strictly resolve the master agency org so clinic sub-account rows never leak into public chat
+    const { data: agencyOrg } = await supabase
+      .from("organizations")
+      .select("id")
+      .eq("type", "agency")
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .abortSignal(AbortSignal.timeout(1000))
+      .maybeSingle();
 
-    if (error || !data || data.length === 0) {
+    if (!agencyOrg?.id) {
       return EMBEDDED_KNOWLEDGE_BASE;
     }
 
-    dbKnowledgeCache = data.map((d: any) => ({
-      id: d.id,
-      category: d.category,
-      title: d.title,
-      content: d.content,
-      keywords: Array.isArray(d.keywords) ? d.keywords : [],
-    }));
+    const [kbRes, profileRes] = await Promise.all([
+      supabase
+        .from("company_knowledge")
+        .select("id, category, title, content, keywords")
+        .eq("org_id", agencyOrg.id)
+        .eq("is_active", true)
+        .abortSignal(AbortSignal.timeout(1200)),
+      supabase
+        .from("company_profiles")
+        .select("company_name, setup_fee, monthly_retainer, timeline_days, supported_emrs, support_email")
+        .eq("org_id", agencyOrg.id)
+        .abortSignal(AbortSignal.timeout(1200))
+        .maybeSingle(),
+    ]);
+
+    const items: KnowledgeItem[] = [];
+
+    if (profileRes.data) {
+      const p = profileRes.data;
+      const emrs = Array.isArray(p.supported_emrs) ? p.supported_emrs.join(", ") : "major EMR platforms";
+      items.push({
+        id: "company_profile_live",
+        category: "pricing",
+        title: `${p.company_name || "Pyrexx AI"} Live Commercial Profile`,
+        content: `Initial implementation fee: $${p.setup_fee ?? 1000}. Plans: Overflow ($1,000/mo) and Full-Time ($1,500/mo, baseline $${p.monthly_retainer ?? 1000}/mo). Go-live SLA: ${p.timeline_days ?? 14} business days. Supported EMRs: ${emrs}. Support email: ${p.support_email || "support@pyrexxai.com"}.`,
+        keywords: ["price", "pricing", "setup", "timeline", "emr", "support", "email", "days"],
+      });
+    }
+
+    if (kbRes.data && kbRes.data.length > 0) {
+      for (const d of kbRes.data as any[]) {
+        items.push({
+          id: d.id,
+          category: d.category,
+          title: d.title,
+          content: d.content,
+          keywords: Array.isArray(d.keywords) ? d.keywords : [],
+        });
+      }
+    } else {
+      items.push(...EMBEDDED_KNOWLEDGE_BASE);
+    }
+
+    cachedItems = items;
     lastCacheFetch = now;
-    return dbKnowledgeCache;
+    return items;
   } catch {
     return EMBEDDED_KNOWLEDGE_BASE;
   }
 }
 
-/**
- * Dynamic Knowledge Retrieval Engine.
- * Tokenizes the user's latest query, ranks relevant knowledge items,
- * and compiles dynamic factual context for prompt grounding.
- */
 export async function getRelevantKnowledge(userQuery: string): Promise<string> {
-  const knowledgeBase = await fetchDatabaseKnowledge();
+  const knowledgeBase = await fetchAgencyKnowledge();
   const normalizedQuery = userQuery.toLowerCase().replace(/[^a-z0-9\s]/g, " ");
   const queryTokens = normalizedQuery.split(/\s+/).filter((t) => t.length > 2);
 
   const scoredItems = knowledgeBase.map((item) => {
     let score = 0;
-    // Check keyword matches
     for (const kw of item.keywords) {
       if (normalizedQuery.includes(kw.toLowerCase())) {
         score += 3;
       }
     }
-    // Check token overlap in title and content
     for (const token of queryTokens) {
       if (item.title.toLowerCase().includes(token)) score += 2;
       if (item.content.toLowerCase().includes(token)) score += 1;
@@ -132,14 +165,13 @@ export async function getRelevantKnowledge(userQuery: string): Promise<string> {
     return { item, score };
   });
 
-  // Sort by relevance score
   scoredItems.sort((a, b) => b.score - a.score);
 
-  // Take top items with score > 0, or default to pricing + timeline if score is 0
   let selected = scoredItems.filter((s) => s.score > 0).slice(0, 3).map((s) => s.item);
-
   if (selected.length === 0) {
-    selected = knowledgeBase.filter((k) => k.id === "pricing_structure" || k.id === "timeline_sla");
+    selected = knowledgeBase
+      .filter((k) => k.id === "company_profile_live" || k.id === "pricing_structure" || k.id === "timeline_sla")
+      .slice(0, 3);
   }
 
   return selected

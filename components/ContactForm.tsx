@@ -50,7 +50,6 @@ export default function ContactForm() {
         action(fd);
       }}
     >
-      {/* Anti-bot Honeypot */}
       <div className="form__hp" aria-hidden="true">
         <input type="text" name="website" tabIndex={-1} autoComplete="off" />
       </div>
@@ -76,8 +75,15 @@ export default function ContactForm() {
           Practice Type
           <select id="practiceType" name="practiceType" defaultValue="MedSpa">
             <option value="MedSpa">MedSpa / Aesthetics</option>
-            <option value="Dental">Dental Clinic</option>
-            <option value="Therapy">Therapy / Mental Health</option>
+            <option value="Dental">Dental / Cosmetic Dentistry</option>
+            <option value="Orthodontics">Orthodontics &amp; Clear Aligners</option>
+            <option value="Dermatology">Dermatology</option>
+            <option value="Chiropractic">Chiropractic</option>
+            <option value="Physical Therapy">Physical Therapy &amp; Sports Rehab</option>
+            <option value="Therapy">Therapy &amp; Behavioral Health</option>
+            <option value="Audiology">Audiology &amp; Hearing Aid</option>
+            <option value="GLP-1 Weight Loss">Medical Weight Loss (GLP-1)</option>
+            <option value="HRT">Hormone Replacement Therapy (HRT)</option>
             <option value="Other">Other Medical Practice</option>
           </select>
         </label>
@@ -92,7 +98,6 @@ export default function ContactForm() {
         </label>
       </div>
 
-      {/* New: Call/Text Software Toggle */}
       <div style={{ marginTop: 4, marginBottom: 4 }}>
         <span className="field-label" style={{ marginBottom: 6, display: "block" }}>
           Do you currently use software to handle incoming calls/texts? *
@@ -143,6 +148,10 @@ export default function ContactForm() {
         Current EMR &amp; Project Scope *
         <textarea id="message" name="message" required rows={4} placeholder="We use Jane App and want to automate our after-hours booking..." />
       </label>
+
+      <p style={{ fontSize: 11.5, color: "var(--muted)", margin: 0 }}>
+        For your protection, please do not submit patient names, dates of birth, or medical details (PHI) in this web form.
+      </p>
 
       {state && !state.success && (
         <p className="form-status form-status--error" role="alert">

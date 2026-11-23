@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowLeft, ArrowRight, Building, Calendar as CalendarIcon, CheckCircle2, Clock, 
+  ArrowLeft, ArrowRight, Building, Calendar as CalendarIcon, CheckCircle2, Clock,
   Download, Layers, Loader2, Mail, Phone, ShieldCheck, User, Video
 } from "lucide-react";
 import { submitBookingAction } from "@/app/actions/booking";
@@ -11,41 +11,90 @@ import { submitBookingAction } from "@/app/actions/booking";
 type Day = { dayName: string; dayNumber: number; fullDate: string };
 const FALLBACK_SLOTS = ["09:00", "10:30", "11:30", "13:00", "14:30", "15:30"];
 
-const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const ymd = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-function generateClientIcs(clinicName: string, dateStr: string, slotStr: string) {
+function isIsoSlot(slot: string): boolean {
+  return slot.includes("T");
+}
+
+function formatSlotLabel(slot: string): string {
+  if (!isIsoSlot(slot)) return slot;
+  const d = new Date(slot);
+  if (Number.isNaN(d.getTime())) return slot;
+  return d.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "America/New_York",
+  });
+}
+
+function buildSlotPayload(selectedDate: string, selectedSlot: string): string {
+  if (isIsoSlot(selectedSlot)) return selectedSlot;
+  return `${selectedDate}T${selectedSlot}:00`;
+}
+
+function easternSlotToDate(dateStr: string, slotStr: string): Date {
+  if (isIsoSlot(slotStr)) {
+    const parsed = new Date(slotStr);
+    if (!Number.isNaN(parsed.getTime())) return parsed;
+  }
   const [year, month, day] = dateStr.split("-").map(Number);
   const [hours, minutes] = slotStr.split(":").map(Number);
-  
-  // Format to UTC string for ICS standard
-  const start = new Date(Date.UTC(year, month - 1, day, hours + 4, minutes)); // Approximate ET to UTC
+  const targetWall = Date.UTC(year, month - 1, day, hours, minutes, 0);
+  const guess = new Date(targetWall + 5 * 3600_000);
+
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(guess);
+
+  const getP = (t: string) => Number(parts.find((p) => p.type === t)?.value || "0");
+  const nyWall = Date.UTC(
+    getP("year"),
+    getP("month") - 1,
+    getP("day"),
+    getP("hour") === 24 ? 0 : getP("hour"),
+    getP("minute"),
+    0
+  );
+  return new Date(targetWall + (guess.getTime() - nyWall));
+}
+
+function generateClientIcs(clinicName: string, dateStr: string, slotStr: string) {
+  const start = easternSlotToDate(dateStr, slotStr);
   const end = new Date(start.getTime() + 15 * 60 * 1000);
-  
   const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
 
   const icsData = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//PyrexxAI//Discovery Consultation//EN",
+    "PRODID:-//Pyrexx AI//Discovery Consultation//EN",
     "METHOD:REQUEST",
     "BEGIN:VEVENT",
     `UID:px-${Date.now()}@pyrexxai.com`,
     `DTSTAMP:${fmt(new Date())}`,
     `DTSTART:${fmt(start)}`,
     `DTEND:${fmt(end)}`,
-    `SUMMARY:PyrexxAI Voice AI Discovery — ${clinicName}`,
-    "DESCRIPTION:15-minute technical discovery session and EMR architecture evaluation with PyrexxAI engineering.",
+    `SUMMARY:Pyrexx AI Voice Receptionist Discovery — ${clinicName}`,
+    "DESCRIPTION:15-minute technical discovery session and EMR architecture evaluation with Pyrexx AI engineering.",
     "LOCATION:Google Meet (link in calendar invite)",
     "STATUS:CONFIRMED",
     "END:VEVENT",
-    "END:VCALENDAR"
+    "END:VCALENDAR",
   ].join("\r\n");
 
   const blob = new Blob([icsData], { type: "text/calendar;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `PyrexxAI-Consultation-${dateStr}.ics`;
+  a.download = `Pyrexx-AI-Consultation-${dateStr}.ics`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -101,7 +150,10 @@ export default function CalEmbed() {
     setError("");
     setSubmitting(true);
     try {
-      const res = await submitBookingAction({ ...form, slotTime: `${selectedDate}T${selectedSlot}:00` });
+      const res = await submitBookingAction({
+        ...form,
+        slotTime: buildSlotPayload(selectedDate, selectedSlot),
+      });
       if (res.success) {
         setBookingRefId(res.bookingId || `PX-${Date.now().toString().slice(-6)}`);
         setStep(3);
@@ -115,7 +167,8 @@ export default function CalEmbed() {
     }
   };
 
-  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setForm({ ...form, [k]: e.target.value });
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    setForm({ ...form, [k]: e.target.value });
 
   return (
     <div className="booking">
@@ -169,7 +222,7 @@ export default function CalEmbed() {
               <div className="slot-grid" role="group" aria-label="Available time slots">
                 {slots.map((s) => (
                   <button key={s} type="button" className="slot-btn" aria-pressed={selectedSlot === s} onClick={() => setSelectedSlot(s)}>
-                    {s}
+                    {formatSlotLabel(s)}
                   </button>
                 ))}
               </div>
@@ -206,8 +259,17 @@ export default function CalEmbed() {
                 <option value="Jane App">Jane App</option>
                 <option value="Boulevard">Boulevard</option>
                 <option value="Mindbody">Mindbody</option>
+                <option value="Open Dental">Open Dental</option>
+                <option value="Dentrix">Dentrix</option>
+                <option value="Eaglesoft">Eaglesoft</option>
+                <option value="SimplePractice">SimplePractice</option>
+                <option value="TherapyNotes">TherapyNotes</option>
+                <option value="ChiroTouch">ChiroTouch</option>
+                <option value="ModMed">ModMed</option>
+                <option value="DrChrono">DrChrono</option>
                 <option value="AthenaHealth">AthenaHealth</option>
                 <option value="eClinicalWorks">eClinicalWorks</option>
+                <option value="Cliniko">Cliniko</option>
                 <option value="Other">Other / Custom</option>
               </select>
             </label>
@@ -220,13 +282,22 @@ export default function CalEmbed() {
               </select>
             </label>
           </div>
+          <p style={{ fontSize: 11.5, color: "var(--muted)", margin: 0 }}>
+            Please do not enter patient names or medical details (PHI) in this scheduling form.
+          </p>
           {error && <p className="form-status form-status--error" role="alert">{error}</p>}
           <div style={{ display: "flex", gap: 8 }}>
             <button type="button" className="btn btn--ghost btn--lg" onClick={() => setStep(1)}>
               <ArrowLeft className="icon" aria-hidden="true" /> Back
             </button>
             <button type="submit" className="btn btn--primary btn--lg" style={{ flex: 1 }} disabled={submitting}>
-              {submitting ? (<><Loader2 className="icon" style={{ animation: "spin 1s linear infinite" }} aria-hidden="true" /> Confirming...</>) : <>Confirm Discovery Call &rarr;</>}
+              {submitting ? (
+                <>
+                  <Loader2 className="icon" style={{ animation: "spin 1s linear infinite" }} aria-hidden="true" /> Confirming...
+                </>
+              ) : (
+                <>Confirm Discovery Call &rarr;</>
+              )}
             </button>
           </div>
         </form>
@@ -240,13 +311,15 @@ export default function CalEmbed() {
             </div>
             <div>
               <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>Discovery Session Confirmed</h3>
-              <p style={{ margin: 0, fontSize: 13, color: "var(--muted)" }}>Reference Code: <span style={{ fontFamily: "monospace", fontWeight: 700, color: "var(--brand-ink)" }}>{bookingRefId}</span></p>
+              <p style={{ margin: 0, fontSize: 13, color: "var(--muted)" }}>
+                Reference Code: <span style={{ fontFamily: "monospace", fontWeight: 700, color: "var(--brand-ink)" }}>{bookingRefId}</span>
+              </p>
             </div>
           </div>
 
           <div className="summary" style={{ marginBottom: 16, borderLeft: "3px solid var(--green-ink)" }}>
             <div><span>Scheduled Date</span><b>{selectedDate}</b></div>
-            <div><span>Time (Eastern Time)</span><b>{selectedSlot} ET</b></div>
+            <div><span>Time (Eastern Time)</span><b>{formatSlotLabel(selectedSlot)} ET</b></div>
             <div><span>Clinic</span><b>{form.clinic}</b></div>
             <div><span>EMR Architecture</span><b>{form.emr}</b></div>
             <div><span>Meeting Format</span><b style={{ display: "flex", alignItems: "center", gap: 4 }}><Video className="icon" style={{ width: 14, height: 14 }} /> Google Meet</b></div>
@@ -260,9 +333,9 @@ export default function CalEmbed() {
           </div>
 
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <button 
-              type="button" 
-              className="btn btn--primary" 
+            <button
+              type="button"
+              className="btn btn--primary"
               onClick={() => generateClientIcs(form.clinic, selectedDate, selectedSlot)}
               style={{ flex: 1 }}
             >

@@ -25,6 +25,15 @@ interface FormSubmissionPayload {
   callSoftwareName: string;
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 function generateProspectAutoresponderHtml(payload: FormSubmissionPayload): string {
   return `
     <!DOCTYPE html>
@@ -33,7 +42,7 @@ function generateProspectAutoresponderHtml(payload: FormSubmissionPayload): stri
       <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F9FAFB; padding: 24px; color: #111827; margin: 0;">
         <div style="max-width: 580px; margin: 0 auto; background: #FFFFFF; padding: 36px 32px; border-radius: 16px; border: 1px solid #E5E7EB; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
           <div style="display: flex; align-items: center; margin-bottom: 24px;">
-            <img src="https://pyrexxai.com/logo.png" alt="PyrexxAI" width="120" style="display: block; border: 0; outline: none;" />
+            <img src="https://pyrexxai.com/logo.png" alt="Pyrexx AI" width="120" style="display: block; border: 0; outline: none;" />
           </div>
 
           <h2 style="font-size: 22px; color: #111827; margin: 0 0 12px 0;">We have received your clinical inquiry, ${escapeHtml(payload.name.split(" ")[0])}.</h2>
@@ -61,7 +70,7 @@ function generateProspectAutoresponderHtml(payload: FormSubmissionPayload): stri
 
           <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 24px 0;" />
           <p style="font-size: 12px; color: #9CA3AF; margin: 0;">
-            PyrexxAI Inc. · HIPAA Compliant Clinical Voice Infrastructure · Delaware Incorporated<br />
+            Pyrexx AI · HIPAA Compliant Clinical Voice Infrastructure · Delaware Incorporated<br />
             Have questions? Reply directly to this email or contact us at <a href="mailto:hello@pyrexxai.com" style="color: #2563EB;">hello@pyrexxai.com</a>.
           </p>
         </div>
@@ -70,21 +79,13 @@ function generateProspectAutoresponderHtml(payload: FormSubmissionPayload): stri
   `.trim();
 }
 
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
 async function dispatchWebhookNotification(payload: FormSubmissionPayload): Promise<boolean> {
   const webhookUrl = process.env.SLACK_WEBHOOK_URL || process.env.DISCORD_WEBHOOK_URL;
   if (!webhookUrl) return false;
 
   try {
-    const textMessage = `🚨 *New PyrexxAI Lead Inbound*\n*Name:* ${payload.name}\n*Email:* ${payload.email}\n*Clinic:* ${payload.clinic} (${payload.practiceType})\n*Call Software:* ${payload.hasCallSoftware === "yes" ? payload.callSoftwareName : "None"}\n*Volume:* ${payload.callVolume}\n*Scope:* ${payload.message}`;
+    // Non-BAA webhook channels receive B2B routing metadata only — full message stays inside CRM
+    const textMessage = `🚨 *New Pyrexx AI Lead Inbound*\n*Clinic:* ${payload.clinic} (${payload.practiceType})\n*Volume:* ${payload.callVolume}\n*Call Software:* ${payload.hasCallSoftware === "yes" ? payload.callSoftwareName : "None"}\n_Open crm.pyrexxai.com Inbox to view full inquiry._`;
 
     const res = await fetch(webhookUrl, {
       method: "POST",
@@ -139,9 +140,8 @@ export async function submitContactForm(_prevState: unknown, formData: FormData)
       callSoftwareName,
     };
 
-    console.info(`[AUDIT_TELEMETRY] [contact_inbound_initiated] Prospect: ${name} (${email}) | Clinic: ${clinic}`);
+    console.info(`[AUDIT_TELEMETRY] [contact_inbound_initiated] Clinic: ${clinic}`);
 
-    // Tier 1: Local Lead persistence
     const dbResult = await persistLead({
       name,
       email,
@@ -157,7 +157,6 @@ export async function submitContactForm(_prevState: unknown, formData: FormData)
       },
     });
 
-    // Tier 2: Real-time Shared CRM Synchronization
     await syncLeadToSharedCrm({
       name,
       email,
@@ -170,10 +169,8 @@ export async function submitContactForm(_prevState: unknown, formData: FormData)
       callSoftwareName,
     });
 
-    // Tier 3: Real-time team webhook alert
     const webhookDispatched = await dispatchWebhookNotification(payload);
 
-    // Tier 4: Transactional email notifications via Resend
     let internalEmailDispatched = false;
     let prospectEmailDispatched = false;
     const resend = getResend();
@@ -188,7 +185,7 @@ export async function submitContactForm(_prevState: unknown, formData: FormData)
         }
 
         const internalRes = await resend.emails.send({
-          from: "PyrexxAI Leads <leads@pyrexxai.com>",
+          from: "Pyrexx AI Leads <leads@pyrexxai.com>",
           to: ["hello@pyrexxai.com"],
           replyTo: email,
           subject: `New Enterprise Lead: ${clinic} (${practiceType})`,
@@ -201,7 +198,7 @@ export async function submitContactForm(_prevState: unknown, formData: FormData)
 
       try {
         const prospectRes = await resend.emails.send({
-          from: "PyrexxAI Discovery <hello@pyrexxai.com>",
+          from: "Pyrexx AI Discovery <hello@pyrexxai.com>",
           to: [email],
           subject: `Inquiry Received: Voice Architecture for ${clinic}`,
           html: generateProspectAutoresponderHtml(payload),
@@ -212,7 +209,9 @@ export async function submitContactForm(_prevState: unknown, formData: FormData)
       }
     }
 
-    console.info(`[AUDIT_TELEMETRY] [contact_inbound_resolved] Total time: ${Date.now() - startTime}ms | DB: ${dbResult.success} | Webhook: ${webhookDispatched} | InternalAlert: ${internalEmailDispatched} | ProspectOutreach: ${prospectEmailDispatched}`);
+    console.info(
+      `[AUDIT_TELEMETRY] [contact_inbound_resolved] Total time: ${Date.now() - startTime}ms | DB: ${dbResult.success} | Webhook: ${webhookDispatched} | InternalAlert: ${internalEmailDispatched} | ProspectOutreach: ${prospectEmailDispatched}`
+    );
 
     if (dbResult.success || webhookDispatched || internalEmailDispatched || prospectEmailDispatched) {
       return {
